@@ -1,221 +1,203 @@
 package com.company;
 import java.util.List;
 
+import static java.lang.Math.max;
+
 public class CricketMatch {
-    Player strikerBatsman;
-    Player nonStrikerBatsman;
-    Player strikeBowler;
-    Team battingTeam;
-    Team bowlingTeam;
-    Team firstBattingTeam;
-    Team secondBattingTeam;
+    private final int matchId;
+    private final int matchOver;
+    private Player strikerBatsman;
+    private Player nonStrikerBatsman;
+    private Player strikeBowler;
+    private Team battingTeam;
+    private Team bowlingTeam;
+
+    public int getMatchId() {
+        return matchId;
+    }
+
+    public int getMatchOver() {
+        return matchOver;
+    }
+
+    private enum availableChoicesForTossWinningTeam {
+        Batting,
+        Bowling;
+        public static availableChoicesForTossWinningTeam getRandomChoice() {
+            return values()[(int) (Math.random() * values().length)];
+        }
+    }
+    private enum tossWinTeam {
+        FirstTeam,
+        SecondTeam;
+        public static tossWinTeam getTossWinningTeam() {
+            return values()[(int) (Math.random() * values().length)];
+        }
+    }
+    public void tossOfMatch(List<Team> teams)
+    {
+        System.out.println("\n-----------------------------------------------------------------------------");
+
+        tossWinTeam tossWinningTeam = tossWinTeam.getTossWinningTeam();
+        availableChoicesForTossWinningTeam tossWinningTeamChoice = availableChoicesForTossWinningTeam.getRandomChoice();
+        if(tossWinningTeam == tossWinTeam.FirstTeam)
+        {
+            if(tossWinningTeamChoice == availableChoicesForTossWinningTeam.Batting)
+            {
+                battingTeam = teams.get(0);
+                bowlingTeam = teams.get(1);
+                System.out.println(battingTeam.getName() + " have win a choose to bat first.");
+            }
+            else
+            {
+                battingTeam = teams.get(1);
+                bowlingTeam = teams.get(0);
+                System.out.println(bowlingTeam.getName() + " have win a choose to bowl first.");
+            }
+        }
+        else
+        {
+            if(tossWinningTeamChoice == availableChoicesForTossWinningTeam.Bowling)
+            {
+                battingTeam = teams.get(1);
+                bowlingTeam = teams.get(0);
+                System.out.println(battingTeam.getName() + " have win a choose to bat first.");
+            }
+            else
+            {
+                battingTeam = teams.get(0);
+                bowlingTeam = teams.get(1);
+                System.out.println(bowlingTeam.getName() + " have win a choose to bowl first.");
+            }
+        }
+        System.out.println("-----------------------------------------------------------------------------");
+    }
+
+
     private void swapPlayer()
     {
         Player temp = strikerBatsman;
         strikerBatsman = nonStrikerBatsman;
         nonStrikerBatsman = temp;
     }
-
     private void swapTeam()
     {
         Team temp = battingTeam;
         battingTeam = bowlingTeam;
         bowlingTeam = temp;
     }
-
-    private void printWicketCommentary()
+    private void nextStrikerBatsman()
     {
-        System.out.println("Wicket gone!");
-        System.out.println("--------------------------------------------------------------------------");
-        System.out.println(strikerBatsman.getName() + "\t" + strikerBatsman.getRole() + "\nRun - " + strikerBatsman.getRunScore() + "(" + strikerBatsman.getNoOfBallsPlayed() +")");
-        System.out.println("Team Score - " + battingTeam.getRun() + " \t Wickets - " + battingTeam.getWickets());
-        System.out.println("--------------------------------------------------------------------------");
+        strikerBatsman = battingTeam.getPlayerList().get(max(strikerBatsman.getBattingOrder(),nonStrikerBatsman.getBattingOrder()) + 1);
     }
-
-    private void printCommentary(int run)
+    private void updateRunInScoreBoard(int run)
     {
-        System.out.println(run + "\t Total Run - " + battingTeam.getRun());
-    }
-
-    private void updateScoreBoard(int run)
-    {
-        strikerBatsman.addRunScore(run);
-        strikerBatsman.addNoOfBallsPlayed(1);
-        battingTeam.addRun(run);
-        strikeBowler.addGivenRun(run);
+//        strikerBatsman.addRunScore(run);
+        strikerBatsman.addBallsFaced();
+        strikerBatsman.updatePlayerRunStates(run);
+        battingTeam.setRunScore(run);
+        strikeBowler.addRunsGiven(run);
         if(run % 2 == 1)swapPlayer();
     }
 
-    private void wicketGone()
+    private void afterWicketGone()
     {
-        strikerBatsman.setBattingStatus(PlayerBattingStatus.status3.getValue());
-        strikerBatsman.addNoOfBallsPlayed(1);
-        battingTeam.addWickets(1);
-        strikeBowler.addNumberOfWicketsTaken(1);
-        printWicketCommentary();
+        strikerBatsman.addBallsFaced();
+        strikerBatsman.setBatsmanDismissal(true);
+        strikerBatsman.setWicketTakenBy(strikeBowler.getName());
+        battingTeam.addWickets();
+        strikeBowler.addWicketsTaken();
+        PrintingClass.printWicketCommentary(battingTeam,strikerBatsman);
 
         if(battingTeam.getWickets() >= 10){
             return;
         }
-
-        if(strikerBatsman.getId() > nonStrikerBatsman.getId())
-        {
-            strikerBatsman = battingTeam.getPlayerList().get(strikerBatsman.getId() + 1);
-        }
-        else
-        {
-            strikerBatsman = battingTeam.getPlayerList().get(nonStrikerBatsman.getId() + 1);
-        }
-
-        strikerBatsman.setBattingStatus(PlayerBattingStatus.status2.getValue());
+        nextStrikerBatsman();
     }
-
-    private String randomGenerator()
+    private void afterWide()
     {
-        String[] possibleOutput = {"0","1","2","3","4","5","6","Wide","NoBall","Wicket"};
-        return possibleOutput[(int)(Math.random() * 10)];
+        System.out.println("Wide");
+        battingTeam.setRunScore(1);
+        battingTeam.addWideRuns(1);
+        strikeBowler.addRunsGiven(1);
+        int extraByeRun = (int)(Math.random() * 5);
+        updateRunInScoreBoard(extraByeRun + 1);
     }
-
-    public void tossOfMatch(List<Team> teams)
+    private void afterNoBall()
     {
-        System.out.println("\n-----------------------------------------------------------------------------");
-        int tossWinTeam = (int)(Math.random()*2);
-        int choiceWinTeam = (int)(Math.random()*2);
-        if(tossWinTeam == 0)
-        {
-            if(choiceWinTeam == 0)
-            {
-                battingTeam = teams.get(0);
-                bowlingTeam = teams.get(1);
-                System.out.println(battingTeam.getName() + " have win a choose to bat first.");
-            }
-            else
-            {
-                battingTeam = teams.get(1);
-                bowlingTeam = teams.get(0);
-                System.out.println(bowlingTeam.getName() + " have win a choose to bowl first.");
-            }
-        }
-        else
-        {
-            if(choiceWinTeam == 0)
-            {
-                battingTeam = teams.get(1);
-                bowlingTeam = teams.get(0);
-                System.out.println(battingTeam.getName() + " have win a choose to bat first.");
-            }
-            else
-            {
-                battingTeam = teams.get(0);
-                bowlingTeam = teams.get(1);
-                System.out.println(bowlingTeam.getName() + " have win a choose to bowl first.");
-            }
-        }
-        firstBattingTeam = battingTeam;
-        secondBattingTeam = bowlingTeam;
-
-        System.out.println("-----------------------------------------------------------------------------");
+        System.out.print("No Ball and ");
+        battingTeam.setRunScore(1);
+        battingTeam.addNoBalls();
+        strikeBowler.addRunsGiven(1);
+        int noBallRun = (int)(Math.random() * 6);
+        if(noBallRun == 5)noBallRun = 6; // No Ball And Wide + 4, Not happen.
+        updateRunInScoreBoard(noBallRun);
+        PrintingClass.printRunCommentary(battingTeam ,noBallRun);
     }
 
-    private void innings(int totalOver, int inning_no)
+    private String randomGenerator() {
+        possibleOutputOfBall outcome = possibleOutputOfBall.getOutcomeOfBall();
+        return outcome.getDisplayName();
+    }
+
+    private void innings(int inning_no)
     {
         strikerBatsman = battingTeam.getPlayerList().get(0);
         nonStrikerBatsman = battingTeam.getPlayerList().get(1);
-        strikerBatsman.setBattingStatus(PlayerBattingStatus.status2.getValue());
-        nonStrikerBatsman.setBattingStatus(PlayerBattingStatus.status2.getValue());
-
-        for(byte i = 1; i <= totalOver; i++)
+        for(byte i = 0; i < matchOver; i++)
         {
             strikeBowler = bowlingTeam.getPlayerList().get(10 - (i % 5));
             for(byte j = 1; j <= 6; j++)
             {
-                System.out.print("Over - " + (i - 1) + "." + j + " --> ");
-
                 String generatedOutput = randomGenerator();
                 if(generatedOutput.equals("Wicket"))
                 {
-                    wicketGone();
+                    afterWicketGone();
                     if(battingTeam.getWickets() >= 10){
                         return;
                     }
-                    battingTeam.addNumberOfBallPlayed(1);
-                    strikeBowler.addNoOfBallsBowled(1);
+                    battingTeam.addBallsFaced();
+                    strikeBowler.addBallsDelivered();
                 }
-                else if((generatedOutput.equals("Wide")) || (generatedOutput.equals("5")))
+                else if(generatedOutput.equals("Wide"))
                 {
-                    System.out.println("Wide");
-                    if(generatedOutput.equals("Wide"))
-                    {
-                        battingTeam.addRun(1);
-                        battingTeam.addWideRun(1);
-                        strikeBowler.addGivenRun(1);
-                    }
-                    else
-                    {
-                        battingTeam.addRun(5);
-                        battingTeam.addWideRun(5);
-                        strikeBowler.addGivenRun(5);
-                    }
+                    afterWide();
                     j--;
                 }
-                else if(generatedOutput.equals("NoBall"))
+                else if(generatedOutput.equals("No Ball"))
                 {
-                    System.out.print("No Ball and ");
-                    battingTeam.addRun(1);
-                    battingTeam.addNoBallRun(1);
-                    strikeBowler.addGivenRun(1);
-                    int noBallRun = (int)(Math.random() * 6);
-                    if(noBallRun == 5)noBallRun = 6; // No Ball And Wide + 4, Not happen.
-                    updateScoreBoard(noBallRun);
-                    printCommentary(noBallRun);
+                    afterNoBall();
                     j--;
                 }
                 else
                 {
-                    int runCount = Integer.parseInt(generatedOutput);
-                    updateScoreBoard(runCount);
-                    printCommentary(runCount);
-                    battingTeam.addNumberOfBallPlayed(1);
-                    strikeBowler.addNoOfBallsBowled(1);
+                    int runCount = Integer.parseInt(String.valueOf(generatedOutput.charAt(0)));
+                    updateRunInScoreBoard(runCount);
+                    PrintingClass.printRunCommentary(battingTeam, runCount);
+                    battingTeam.addBallsFaced();
+                    strikeBowler.addBallsDelivered();
                 }
-                if((inning_no == 2) && (bowlingTeam.getRun() < battingTeam.getRun()))
+                if((inning_no == 2) && (bowlingTeam.getRunScore() < battingTeam.getRunScore()))
                 {
                     return;
                 }
             }
             swapPlayer();
         }
-        System.out.println("\n" + battingTeam.getName() +" Inning was over");
-        System.out.println("------------------------------------------------------------------------------------------------------");
     }
 
-    public void startGame(int totalOver)
+    public void startGame()
     {
         System.out.println("New Game Start!");
-
-        innings(totalOver,1);
+        innings(1);
+        System.out.println("\n" + battingTeam.getName() +" Inning was over");
         swapTeam();
-        innings(totalOver,2);
+        innings(2);
+        PrintingClass.winningTeam(bowlingTeam,battingTeam);
     }
-
-    public void winningTeam()
+    public CricketMatch(int matchOver, int matchId)
     {
-        System.out.println("\n-----------------------------------------------------------------------------");
-
-        if(firstBattingTeam.getRun() == secondBattingTeam.getRun())
-        {
-            System.out.println("Match Tie");
-        }
-        else if(firstBattingTeam.getRun() > secondBattingTeam.getRun())
-        {
-            int runDiff = firstBattingTeam.getRun() - secondBattingTeam.getRun();
-            System.out.println(firstBattingTeam.getName() + " was win by " + runDiff + " run");
-        }
-        else
-        {
-            int leftWicket = 10 - secondBattingTeam.getWickets();
-            System.out.println(secondBattingTeam.getName() + " was win by " + leftWicket + " Wickets");
-        }
-        System.out.println("-----------------------------------------------------------------------------\n");
+        this.matchOver = matchOver;
+        this.matchId = matchId;
     }
 }
