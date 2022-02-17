@@ -1,6 +1,6 @@
 package com.company;
+import com.company.Utility.UtilityOperations;
 import java.util.List;
-
 import static java.lang.Math.max;
 
 public class CricketMatch {
@@ -11,11 +11,11 @@ public class CricketMatch {
     private Player strikeBowler;
     private Team battingTeam;
     private Team bowlingTeam;
+    private DetailScoreBoardBallWise detailScoreBoardBallWise;
 
     public int getMatchId() {
         return matchId;
     }
-
     public int getMatchOver() {
         return matchOver;
     }
@@ -36,8 +36,6 @@ public class CricketMatch {
     }
     public void tossOfMatch(List<Team> teams)
     {
-        System.out.println("\n-----------------------------------------------------------------------------");
-
         tossWinTeam tossWinningTeam = tossWinTeam.getTossWinningTeam();
         availableChoicesForTossWinningTeam tossWinningTeamChoice = availableChoicesForTossWinningTeam.getRandomChoice();
         if(tossWinningTeam == tossWinTeam.FirstTeam)
@@ -46,14 +44,15 @@ public class CricketMatch {
             {
                 battingTeam = teams.get(0);
                 bowlingTeam = teams.get(1);
-                System.out.println(battingTeam.getName() + " have win a choose to bat first.");
+                detailScoreBoardBallWise.setTossWinningTeamChoice("Batting");
             }
             else
             {
                 battingTeam = teams.get(1);
                 bowlingTeam = teams.get(0);
-                System.out.println(bowlingTeam.getName() + " have win a choose to bowl first.");
+                detailScoreBoardBallWise.setTossWinningTeamChoice("Bowling");
             }
+            detailScoreBoardBallWise.setTossWinningTeam(teams.get(0));
         }
         else
         {
@@ -61,31 +60,19 @@ public class CricketMatch {
             {
                 battingTeam = teams.get(1);
                 bowlingTeam = teams.get(0);
-                System.out.println(battingTeam.getName() + " have win a choose to bat first.");
+                detailScoreBoardBallWise.setTossWinningTeamChoice("Bowling");
             }
             else
             {
                 battingTeam = teams.get(0);
                 bowlingTeam = teams.get(1);
-                System.out.println(bowlingTeam.getName() + " have win a choose to bowl first.");
+                detailScoreBoardBallWise.setTossWinningTeamChoice("Batting");
             }
+            detailScoreBoardBallWise.setTossWinningTeam(teams.get(1));
         }
-        System.out.println("-----------------------------------------------------------------------------");
+        detailScoreBoardBallWise.setTeams(battingTeam,bowlingTeam);
     }
 
-
-    private void swapPlayer()
-    {
-        Player temp = strikerBatsman;
-        strikerBatsman = nonStrikerBatsman;
-        nonStrikerBatsman = temp;
-    }
-    private void swapTeam()
-    {
-        Team temp = battingTeam;
-        battingTeam = bowlingTeam;
-        bowlingTeam = temp;
-    }
     private void nextStrikerBatsman()
     {
         strikerBatsman = battingTeam.getPlayerList().get(max(strikerBatsman.getBattingOrder(),nonStrikerBatsman.getBattingOrder()) + 1);
@@ -97,7 +84,12 @@ public class CricketMatch {
         strikerBatsman.updatePlayerRunStates(run);
         battingTeam.setRunScore(run);
         strikeBowler.addRunsGiven(run);
-        if(run % 2 == 1)swapPlayer();
+        if(run % 2 == 1)
+        {
+            Player[] swappedPlayers = UtilityOperations.swapPlayer(strikerBatsman,nonStrikerBatsman);
+            strikerBatsman = swappedPlayers[0];
+            nonStrikerBatsman = swappedPlayers[1];
+        }
     }
 
     private void afterWicketGone()
@@ -107,7 +99,6 @@ public class CricketMatch {
         strikerBatsman.setWicketTakenBy(strikeBowler.getName());
         battingTeam.addWickets();
         strikeBowler.addWicketsTaken();
-        PrintingClass.printWicketCommentary(battingTeam,strikerBatsman);
 
         if(battingTeam.getWickets() >= 10){
             return;
@@ -116,27 +107,24 @@ public class CricketMatch {
     }
     private void afterWide()
     {
-        System.out.println("Wide");
         battingTeam.setRunScore(1);
         battingTeam.addWideRuns(1);
         strikeBowler.addRunsGiven(1);
-        int extraByeRun = (int)(Math.random() * 5);
-        updateRunInScoreBoard(extraByeRun + 1);
+//        int extraByeRun = (int)(Math.random() * 5);
+//        updateRunInScoreBoard(extraByeRun + 1);
     }
     private void afterNoBall()
     {
-        System.out.print("No Ball and ");
         battingTeam.setRunScore(1);
         battingTeam.addNoBalls();
         strikeBowler.addRunsGiven(1);
         int noBallRun = (int)(Math.random() * 6);
         if(noBallRun == 5)noBallRun = 6; // No Ball And Wide + 4, Not happen.
         updateRunInScoreBoard(noBallRun);
-        PrintingClass.printRunCommentary(battingTeam ,noBallRun);
     }
 
     private String randomGenerator() {
-        possibleOutputOfBall outcome = possibleOutputOfBall.getOutcomeOfBall();
+        possibleOutputOfBall outcome = possibleOutputOfBall.getOutcomeOfBall(strikerBatsman.getRole());
         return outcome.getDisplayName();
     }
 
@@ -153,11 +141,12 @@ public class CricketMatch {
                 if(generatedOutput.equals("Wicket"))
                 {
                     afterWicketGone();
-                    if(battingTeam.getWickets() >= 10){
-                        return;
-                    }
                     battingTeam.addBallsFaced();
                     strikeBowler.addBallsDelivered();
+                    if(battingTeam.getWickets() >= 10){
+                        detailScoreBoardBallWise.updateStatesScoreBoard(inning_no,generatedOutput,strikerBatsman,strikeBowler,i,j,battingTeam.getRunScore());
+                        return;
+                    }
                 }
                 else if(generatedOutput.equals("Wide"))
                 {
@@ -173,31 +162,41 @@ public class CricketMatch {
                 {
                     int runCount = Integer.parseInt(String.valueOf(generatedOutput.charAt(0)));
                     updateRunInScoreBoard(runCount);
-                    PrintingClass.printRunCommentary(battingTeam, runCount);
                     battingTeam.addBallsFaced();
                     strikeBowler.addBallsDelivered();
                 }
+                detailScoreBoardBallWise.updateStatesScoreBoard(inning_no,generatedOutput,strikerBatsman,strikeBowler,i,j,battingTeam.getRunScore());
                 if((inning_no == 2) && (bowlingTeam.getRunScore() < battingTeam.getRunScore()))
                 {
                     return;
                 }
             }
-            swapPlayer();
+            Player[] swappedPlayers = UtilityOperations.swapPlayer(strikerBatsman,nonStrikerBatsman);
+            strikerBatsman = swappedPlayers[0];
+            nonStrikerBatsman = swappedPlayers[1];
         }
     }
 
     public void startGame()
     {
-        System.out.println("New Game Start!");
+
         innings(1);
-        System.out.println("\n" + battingTeam.getName() +" Inning was over");
-        swapTeam();
+
+        Team[] swappedTeams = UtilityOperations.swapTeam(battingTeam,bowlingTeam);
+        battingTeam = swappedTeams[0];
+        bowlingTeam = swappedTeams[1];
+
         innings(2);
-        PrintingClass.winningTeam(bowlingTeam,battingTeam);
+        detailScoreBoardBallWise.selectWinningTeam();
+        detailScoreBoardBallWise.printScoreBoardBallWise();
+
+        System.out.println(detailScoreBoardBallWise.getWinningStatus());
     }
     public CricketMatch(int matchOver, int matchId)
     {
         this.matchOver = matchOver;
         this.matchId = matchId;
+        detailScoreBoardBallWise = new DetailScoreBoardBallWise(matchId,matchOver);
+
     }
 }

@@ -11,7 +11,7 @@ public enum possibleOutputOfBall {
     NoBall("No Ball"),
     Wicket("Wicket");
 
-    private String displayName;
+    private final String displayName;
 
     possibleOutputOfBall(String displayName) {
         this.displayName = displayName;
@@ -21,7 +21,36 @@ public enum possibleOutputOfBall {
         return displayName;
     }
 
-    public static possibleOutputOfBall getOutcomeOfBall() {
-        return values()[(int) (Math.random() * values().length)];
+    // Probability of getting Index of possible output for Batsman and Bowler.
+    private static final double[] probabilityArrayOfBatsman = {0.3, 0.25, 0.15, 0.05, 0.12, 0.08, 0.025, 0.015, 0.01};
+    private static final double[] probabilityArrayOfBowler =  {0.5, 0.2, 0.1, 0.03, 0.05, 0.03, 0.025, 0.015, 0.5};
+
+    public static possibleOutputOfBall getOutcomeOfBall(String role) {
+
+        double randomNumber = Math.random();
+        double probabilitySum = 0.0;
+        if(role.equals("Batsman"))
+        {
+            for(int i = 0; i < values().length; i++)
+            {
+                probabilitySum += probabilityArrayOfBatsman[i];
+                if(randomNumber <= probabilitySum)
+                {
+                    return values()[i];
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < values().length; i++)
+            {
+                probabilitySum += probabilityArrayOfBowler[i];
+                if(randomNumber <= probabilitySum)
+                {
+                    return values()[i];
+                }
+            }
+        }
+        return values()[8];
     }
 }

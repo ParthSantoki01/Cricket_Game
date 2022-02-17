@@ -67,25 +67,4 @@ public class PrintingClass {
     {
         System.out.println(run + "\t Total Run - " + battingTeam.getRunScore());
     }
-
-    public static void winningTeam(Team firstBattingTeam, Team secondBattingTeam)
-    {
-        System.out.println("\n-----------------------------------------------------------------------------");
-
-        if(secondBattingTeam.getRunScore() == firstBattingTeam.getRunScore())
-        {
-            System.out.println("Match Tie");
-        }
-        else if(firstBattingTeam.getRunScore() > secondBattingTeam.getRunScore())
-        {
-            int runDiff = firstBattingTeam.getRunScore() - secondBattingTeam.getRunScore();
-            System.out.println(firstBattingTeam.getName() + " was win by " + runDiff + " run");
-        }
-        else
-        {
-            int leftWicket = 10 - secondBattingTeam.getWickets();
-            System.out.println(secondBattingTeam.getName() + " was win by " + leftWicket + " Wickets");
-        }
-        System.out.println("-----------------------------------------------------------------------------\n");
-    }
 }
