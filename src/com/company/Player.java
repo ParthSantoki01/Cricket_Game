@@ -1,10 +1,12 @@
 package com.company;
 
+import com.company.Utility.PlayerRole;
+
 public class Player {
     private final int id;
     private final int jerseyNumber;
     private final String name;
-    private final String role;
+    private final PlayerRole role;
     private final int battingOrder;
     private int runScore;
     private int runsGiven;
@@ -20,24 +22,18 @@ public class Player {
     private int noOfFour = 0;
     private int noOfSix = 0;
 
-
-
     public int getId() {
         return id;
     }
-
     public int getJerseyNumber() {
         return jerseyNumber;
     }
-
     public String getName() {
         return name;
     }
-
-    public String getRole() {
+    public PlayerRole getRole() {
         return role;
     }
-
     public int getBattingOrder() {
         return battingOrder;
     }
@@ -45,7 +41,6 @@ public class Player {
     public int getRunScore() {
         return runScore;
     }
-
     public void addRunScore(int runScore) {
         this.runScore += runScore;
     }
@@ -53,7 +48,6 @@ public class Player {
     public int getRunsGiven() {
         return runsGiven;
     }
-
     public void addRunsGiven(int runsGiven) {
         this.runsGiven += runsGiven;
     }
@@ -61,7 +55,6 @@ public class Player {
     public int getWicketsTaken() {
         return wicketsTaken;
     }
-
     public void addWicketsTaken() {
         this.wicketsTaken++;
     }
@@ -69,7 +62,6 @@ public class Player {
     public int getBallsFaced() {
         return ballsFaced;
     }
-
     public void addBallsFaced() {
         this.ballsFaced++;
     }
@@ -77,7 +69,6 @@ public class Player {
     public int getBallsDelivered() {
         return ballsDelivered;
     }
-
     public void addBallsDelivered() {
         this.ballsDelivered++;
     }
@@ -85,7 +76,6 @@ public class Player {
     public String getWicketTakenBy() {
         return wicketTakenBy;
     }
-
     public void setWicketTakenBy(String wicketTakenBy) {
         this.wicketTakenBy = wicketTakenBy;
     }
@@ -97,7 +87,6 @@ public class Player {
     public boolean isBatsmanDismissal() {
         return batsmanDismissal;
     }
-
     public void setBatsmanDismissal(boolean batsmanDismissal) {
         this.batsmanDismissal = batsmanDismissal;
     }
@@ -116,28 +105,23 @@ public class Player {
     public int getNoOfDotBall() {
         return noOfDotBall;
     }
-
     public int getNoOf1s() {
         return noOf1s;
     }
-
     public int getNoOf2s() {
         return noOf2s;
     }
-
     public int getNoOf3s() {
         return noOf3s;
     }
-
     public int getNoOfFour() {
         return noOfFour;
     }
-
     public int getNoOfSix() {
         return noOfSix;
     }
 
-    public Player (String name, String role, int jerseyNumber, int id, int battingOrder)
+    public Player (String name, PlayerRole role, int jerseyNumber, int id, int battingOrder)
     {
         this.name = name;
         this.role = role;
@@ -146,4 +130,3 @@ public class Player {
         this.battingOrder = battingOrder;
     }
 }
-

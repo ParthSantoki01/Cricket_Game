@@ -1,7 +1,7 @@
 package com.company;
 public class PrintingClass {
 
-    public static void printWicketCommentary(Team battingTeam, Player strikerBatsman)
+    public void printWicketCommentary(Team battingTeam, Player strikerBatsman)
     {
         System.out.println("Wicket gone!");
         System.out.println("--------------------------------------------------------------------------");
@@ -31,10 +31,10 @@ public class PrintingClass {
         System.out.println("----------------------------------");
         System.out.println("Summary");
         System.out.println("Runs : \t\t" + team.getRunScore());
-        System.out.println("Over: \t\t" + team.getBallsFaced()/6 + "." + team.getBallsFaced()%6);
+        System.out.println("Over: \t\t" + team.getPlayedOvers());
         System.out.println("Wickets:\t" + team.getWickets());
         System.out.println("Wide: \t\t" + team.getWideRuns());
-        System.out.println("No Ball:\t" + team.getWideRuns());
+        System.out.println("No Ball:\t" + team.getNoBalls());
         System.out.println("-----------------\n");
         System.out.println("Score Board");
         System.out.println("-----------------");

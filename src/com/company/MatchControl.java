@@ -15,9 +15,9 @@ public class MatchControl {
             teamList.add(new Team(teamName, i));
         }
 
-        for (int i = 0; i < 2; i++) {
-            PrintingClass.printTeam(teamList.get(i));
-        }
+//        for (int i = 0; i < 2; i++) {
+//            PrintingClass.printTeam(teamList.get(i));
+//        }
 
         System.out.print("Enter Number of Match Over : ");
         int totalOver = sc.nextInt();
