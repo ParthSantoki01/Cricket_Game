@@ -22,14 +22,14 @@ public enum possibleOutputOfBall {
     }
 
     // Probability of getting Index of possible output for Batsman and Bowler.
-    private static final double[] probabilityArrayOfBatsman = {0.3, 0.25, 0.15, 0.05, 0.12, 0.08, 0.025, 0.015, 0.01};
-    private static final double[] probabilityArrayOfBowler =  {0.5, 0.2, 0.1, 0.03, 0.05, 0.03, 0.025, 0.015, 0.5};
+    private static final double[] probabilityArrayOfBatsman = {0.26, 0.25, 0.15, 0.05, 0.12, 0.08, 0.025, 0.015, 0.05};
+    private static final double[] probabilityArrayOfBowler =  {0.5, 0.2, 0.1, 0.03, 0.05, 0.03, 0.025, 0.015, 0.05};
 
-    public static possibleOutputOfBall getOutcomeOfBall(String role) {
+    public static possibleOutputOfBall getOutcomeOfBall(playerRole PlayerRole) {
 
         double randomNumber = Math.random();
         double probabilitySum = 0.0;
-        if(role.equals("Batsman"))
+        if(PlayerRole.equals(playerRole.Batsman))
         {
             for(int i = 0; i < values().length; i++)
             {

@@ -10,7 +10,7 @@ public class DetailScoreBoardBallWise {
     private String tossWinningTeamChoice;
     private Team firstBattingTeam;
     private Team secondBattingTeam;
-    private String winningStatus = "Match Tie";
+    private String winningStatus;
     private List<PerBallDetail> firstInningEveryBallDetails = new ArrayList<>();
     private List<PerBallDetail> secondInningEveryBallDetails = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class DetailScoreBoardBallWise {
     {
         if(secondBattingTeam.getRunScore() == firstBattingTeam.getRunScore())
         {
-            System.out.println("Match Tie");
+            winningStatus = "Match Tie";
         }
         else if(firstBattingTeam.getRunScore() > secondBattingTeam.getRunScore())
         {

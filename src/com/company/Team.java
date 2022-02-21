@@ -72,8 +72,8 @@ public class Team {
         this.teamId = teamId;
         for(int i = 0; i < NUMBER_OF_PLAYER_IN_TEAM; i++)
         {
-            if(i < 6) playerList.add(new Player(name + (i+1), "Batsman", i+1, i, i));
-            else playerList.add(new Player(name + (i+1), "Bowler", i+1, i, i));
+            if(i < 6) playerList.add(new Player(name + (i+1), playerRole.Batsman, i+1, i, i));
+            else playerList.add(new Player(name + (i+1), playerRole.Bowler, i+1, i, i));
         }
     }
 }

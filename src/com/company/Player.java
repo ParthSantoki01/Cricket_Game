@@ -4,7 +4,7 @@ public class Player {
     private final int id;
     private final int jerseyNumber;
     private final String name;
-    private final String role;
+    private final playerRole role;
     private final int battingOrder;
     private int runScore;
     private int runsGiven;
@@ -34,7 +34,7 @@ public class Player {
         return name;
     }
 
-    public String getRole() {
+    public playerRole getRole() {
         return role;
     }
 
@@ -137,7 +137,7 @@ public class Player {
         return noOfSix;
     }
 
-    public Player (String name, String role, int jerseyNumber, int id, int battingOrder)
+    public Player (String name, playerRole role, int jerseyNumber, int id, int battingOrder)
     {
         this.name = name;
         this.role = role;

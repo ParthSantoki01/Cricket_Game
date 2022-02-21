@@ -5,7 +5,7 @@ import static java.lang.Math.max;
 
 public class CricketMatch {
     private final int matchId;
-    private final int matchOver;
+    private final int numberOfOversInAnInning;
     private Player strikerBatsman;
     private Player nonStrikerBatsman;
     private Player strikeBowler;
@@ -16,8 +16,8 @@ public class CricketMatch {
     public int getMatchId() {
         return matchId;
     }
-    public int getMatchOver() {
-        return matchOver;
+    public int getNumberOfOversInAnInning() {
+        return numberOfOversInAnInning;
     }
 
     private enum availableChoicesForTossWinningTeam {
@@ -38,37 +38,37 @@ public class CricketMatch {
     {
         tossWinTeam tossWinningTeam = tossWinTeam.getTossWinningTeam();
         availableChoicesForTossWinningTeam tossWinningTeamChoice = availableChoicesForTossWinningTeam.getRandomChoice();
-        if(tossWinningTeam == tossWinTeam.FirstTeam)
-        {
-            if(tossWinningTeamChoice == availableChoicesForTossWinningTeam.Batting)
-            {
-                battingTeam = teams.get(0);
-                bowlingTeam = teams.get(1);
-                detailScoreBoardBallWise.setTossWinningTeamChoice("Batting");
+        switch (tossWinningTeam) {
+            case FirstTeam -> {
+                switch (tossWinningTeamChoice) {
+                    case Batting -> {
+                        battingTeam = teams.get(0);
+                        bowlingTeam = teams.get(1);
+                        detailScoreBoardBallWise.setTossWinningTeamChoice("Batting");
+                    }
+                    default -> {
+                        battingTeam = teams.get(1);
+                        bowlingTeam = teams.get(0);
+                        detailScoreBoardBallWise.setTossWinningTeamChoice("Bowling");
+                    }
+                }
+                detailScoreBoardBallWise.setTossWinningTeam(teams.get(0));
             }
-            else
-            {
-                battingTeam = teams.get(1);
-                bowlingTeam = teams.get(0);
-                detailScoreBoardBallWise.setTossWinningTeamChoice("Bowling");
+            default -> {
+                switch (tossWinningTeamChoice) {
+                    case Bowling -> {
+                        battingTeam = teams.get(0);
+                        bowlingTeam = teams.get(1);
+                        detailScoreBoardBallWise.setTossWinningTeamChoice("Bowling");
+                    }
+                    default -> {
+                        battingTeam = teams.get(1);
+                        bowlingTeam = teams.get(0);
+                        detailScoreBoardBallWise.setTossWinningTeamChoice("Batting");
+                    }
+                }
+                detailScoreBoardBallWise.setTossWinningTeam(teams.get(1));
             }
-            detailScoreBoardBallWise.setTossWinningTeam(teams.get(0));
-        }
-        else
-        {
-            if(tossWinningTeamChoice == availableChoicesForTossWinningTeam.Bowling)
-            {
-                battingTeam = teams.get(1);
-                bowlingTeam = teams.get(0);
-                detailScoreBoardBallWise.setTossWinningTeamChoice("Bowling");
-            }
-            else
-            {
-                battingTeam = teams.get(0);
-                bowlingTeam = teams.get(1);
-                detailScoreBoardBallWise.setTossWinningTeamChoice("Batting");
-            }
-            detailScoreBoardBallWise.setTossWinningTeam(teams.get(1));
         }
         detailScoreBoardBallWise.setTeams(battingTeam,bowlingTeam);
     }
@@ -132,10 +132,10 @@ public class CricketMatch {
     {
         strikerBatsman = battingTeam.getPlayerList().get(0);
         nonStrikerBatsman = battingTeam.getPlayerList().get(1);
-        for(byte i = 0; i < matchOver; i++)
+        for(byte over = 0; over < numberOfOversInAnInning; over++)
         {
-            strikeBowler = bowlingTeam.getPlayerList().get(10 - (i % 5));
-            for(byte j = 1; j <= 6; j++)
+            strikeBowler = bowlingTeam.getPlayerList().get(10 - (over % 5));
+            for(byte ball = 1; ball <= 6; ball++)
             {
                 String generatedOutput = randomGenerator();
                 if(generatedOutput.equals("Wicket"))
@@ -144,19 +144,19 @@ public class CricketMatch {
                     battingTeam.addBallsFaced();
                     strikeBowler.addBallsDelivered();
                     if(battingTeam.getWickets() >= 10){
-                        detailScoreBoardBallWise.updateStatesScoreBoard(inning_no,generatedOutput,strikerBatsman,strikeBowler,i,j,battingTeam.getRunScore());
+                        detailScoreBoardBallWise.updateStatesScoreBoard(inning_no,generatedOutput,strikerBatsman,strikeBowler,over,ball,battingTeam.getRunScore());
                         return;
                     }
                 }
                 else if(generatedOutput.equals("Wide"))
                 {
                     afterWide();
-                    j--;
+                    ball--;
                 }
                 else if(generatedOutput.equals("No Ball"))
                 {
                     afterNoBall();
-                    j--;
+                    ball--;
                 }
                 else
                 {
@@ -165,7 +165,7 @@ public class CricketMatch {
                     battingTeam.addBallsFaced();
                     strikeBowler.addBallsDelivered();
                 }
-                detailScoreBoardBallWise.updateStatesScoreBoard(inning_no,generatedOutput,strikerBatsman,strikeBowler,i,j,battingTeam.getRunScore());
+                detailScoreBoardBallWise.updateStatesScoreBoard(inning_no,generatedOutput,strikerBatsman,strikeBowler,over,ball,battingTeam.getRunScore());
                 if((inning_no == 2) && (bowlingTeam.getRunScore() < battingTeam.getRunScore()))
                 {
                     return;
@@ -192,11 +192,11 @@ public class CricketMatch {
 
         System.out.println(detailScoreBoardBallWise.getWinningStatus());
     }
-    public CricketMatch(int matchOver, int matchId)
+    public CricketMatch(int numberOfOversInAnInning, int matchId)
     {
-        this.matchOver = matchOver;
+        this.numberOfOversInAnInning = numberOfOversInAnInning;
         this.matchId = matchId;
-        detailScoreBoardBallWise = new DetailScoreBoardBallWise(matchId,matchOver);
+        detailScoreBoardBallWise = new DetailScoreBoardBallWise(matchId,numberOfOversInAnInning);
 
     }
 }
