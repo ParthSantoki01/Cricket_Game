@@ -1,9 +1,8 @@
 package com.company;
-
 import com.company.Utility.PlayerRole;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Team {
     private final String name;
@@ -66,15 +65,22 @@ public class Team {
         this.noBalls++;
     }
 
+    Scanner sc= new Scanner(System.in);
     public Team(String name, int teamId)
     {
         this.name = name;
         this.teamId = teamId;
         for(int i = 0; i < NUMBER_OF_PLAYER_IN_TEAM; i++)
         {
-            if(i < 5) playerList.add(new Player(name + (i+1), PlayerRole.Batsman, i+1, i, i));
-            else if(i == 5)playerList.add(new Player(name + (i+1), PlayerRole.Wicketkeeper, i+1, i, i));
-            else playerList.add(new Player(name + (i+1), PlayerRole.Bowler, i+1, i, i));
+            System.out.print("Enter Player " + (i+1) + " Name : ");
+            String playerName = sc.nextLine();
+            while(playerName.length() == 0){
+                System.out.print("Enter Player " + (i+1) + " Name : ");
+                playerName = sc.nextLine();
+            }
+            if(i < 5) playerList.add(new Player(playerName, PlayerRole.Batsman, i+1, i, i,teamId));
+            else if(i == 5)playerList.add(new Player(playerName, PlayerRole.Wicketkeeper, i+1, i, i,teamId));
+            else playerList.add(new Player(playerName, PlayerRole.Bowler, i+1, i, i,teamId));
         }
     }
 }

@@ -4,6 +4,7 @@ import com.company.Utility.PlayerRole;
 
 public class Player {
     private final int id;
+    private final int teamId;
     private final int jerseyNumber;
     private final String name;
     private final PlayerRole role;
@@ -121,12 +122,13 @@ public class Player {
         return noOfSix;
     }
 
-    public Player (String name, PlayerRole role, int jerseyNumber, int id, int battingOrder)
+    public Player (String name, PlayerRole role, int jerseyNumber, int id, int battingOrder, int teamId)
     {
         this.name = name;
         this.role = role;
         this.jerseyNumber = jerseyNumber;
         this.id = id;
         this.battingOrder = battingOrder;
+        this.teamId = teamId;
     }
 }

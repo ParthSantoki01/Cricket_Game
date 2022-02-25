@@ -1,7 +1,7 @@
 package com.company;
-import com.company.ScoreBoards.PerBallDetails;
-import com.company.ScoreBoards.PerOverDetails;
-import com.company.ScoreBoards.ScoreBoard;
+import com.company.ScoreBoards.*;
+//import com.company.ScoreBoards.PerOverDetails;
+//import com.company.ScoreBoards.ScoreBoard;
 import com.company.Utility.PossibleOutputOfBall;
 import com.company.Utility.UtilityOperations;
 import com.company.Utility.availableChoicesForTossWinningTeam;
@@ -187,9 +187,7 @@ public class CricketMatch {
 
         startAnInning(2);
 
-        scoreBoard.printEveryBallDetails();
-        scoreBoard.printEveryOverDetails();
-        scoreBoard.printWinningTeam();
+        scoreBoard.printScoreBoard();
     }
     public CricketMatch(int numberOfOversInAnInning, int matchId)
     {

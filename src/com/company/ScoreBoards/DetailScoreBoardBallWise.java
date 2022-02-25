@@ -1,8 +1,4 @@
 package com.company.ScoreBoards;
-
-import com.company.Player;
-import com.company.Utility.PossibleOutputOfBall;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +11,11 @@ public class DetailScoreBoardBallWise {
     public List<PerBallDetails> getFirstInningEveryBallDetails() {
         return firstInningEveryBallDetails;
     }
-
     public List<PerBallDetails> getSecondInningEveryBallDetails() {
         return secondInningEveryBallDetails;
     }
 
-    public void updateDetailsScoreBoardBallWise(PerBallDetails ballDetails, int inning_no)
-    {
+    public void updateDetailsScoreBoardBallWise(PerBallDetails ballDetails, int inning_no) {
         if(inning_no == 1)firstInningEveryBallDetails.add(ballDetails);
         else secondInningEveryBallDetails.add(ballDetails);
     }

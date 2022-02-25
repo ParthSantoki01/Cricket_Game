@@ -12,12 +12,12 @@ public class MatchControl {
         for (int i = 0; i < 2; i++) {
             System.out.print("Enter Name of Team " + (i+1) + " : ");
             String teamName = sc.nextLine();
+            while(teamName.length() == 0){
+                System.out.print("Enter Name of Team " + (i+1) + " : ");
+                teamName = sc.nextLine();
+            }
             teamList.add(new Team(teamName, i));
         }
-
-//        for (int i = 0; i < 2; i++) {
-//            PrintingClass.printTeam(teamList.get(i));
-//        }
 
         System.out.print("Enter Number of Match Over : ");
         int totalOver = sc.nextInt();
@@ -25,10 +25,5 @@ public class MatchControl {
         CricketMatch newGame = new CricketMatch(totalOver, 1);
         newGame.tossOfMatch(teamList);
         newGame.startGame();
-
-        for (int i = 0; i < 2; i++)
-        {
-            PrintingClass.printScoreBoard(teamList.get(i));
-        }
     }
 }

@@ -15,35 +15,30 @@ public class PerBallDetails {
     public Player getBatsman() {
         return batsman;
     }
-
     public Player getBowler() {
         return bowler;
     }
-
     public int getOverNumber() {
         return overNumber;
     }
-
     public int getBallNumberInOver() {
         return ballNumberInOver;
     }
-
-    public PossibleOutputOfBall getBallOutcome() {
-        return ballOutcome;
+    public int getWicketsUpToThisBall() {
+        return wicketsUpToThisBall;
     }
-    public void setBallOutcome(PossibleOutputOfBall ballOutcome) {
-        this.ballOutcome = ballOutcome;
-    }
-
     public int getTeamScoreUpToThisBall() {
         return teamScoreUpToThisBall;
     }
-    public void setTeamScoreUpToThisBall(int teamScoreUpToThisBall) {
-        this.teamScoreUpToThisBall = teamScoreUpToThisBall;
+    public PossibleOutputOfBall getBallOutcome() {
+        return ballOutcome;
     }
 
-    public int getWicketsUpToThisBall() {
-        return wicketsUpToThisBall;
+    public void setBallOutcome(PossibleOutputOfBall ballOutcome) {
+        this.ballOutcome = ballOutcome;
+    }
+    public void setTeamScoreUpToThisBall(int teamScoreUpToThisBall) {
+        this.teamScoreUpToThisBall = teamScoreUpToThisBall;
     }
     public void setWicketsUpToThisBall(int wicketsUpToThisBall) {
         this.wicketsUpToThisBall = wicketsUpToThisBall;

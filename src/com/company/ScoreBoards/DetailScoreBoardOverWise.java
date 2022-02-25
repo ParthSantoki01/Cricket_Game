@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DetailScoreBoardOverWise {
-    private int matchId;
-    private int scoreBoardId;
+    private final int matchId;
+    private final int scoreBoardId;
     private List<PerOverDetails> firstInningOvers = new ArrayList<>();
     private List<PerOverDetails> secondInningOvers = new ArrayList<>();
 
@@ -21,8 +21,7 @@ public class DetailScoreBoardOverWise {
         else secondInningOvers.add(overDetails);
     }
 
-    public DetailScoreBoardOverWise(int matchId, int scoreBoardId)
-    {
+    public DetailScoreBoardOverWise(int matchId, int scoreBoardId) {
         this.matchId = matchId;
         this.scoreBoardId = scoreBoardId;
     }
