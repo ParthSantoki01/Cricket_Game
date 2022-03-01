@@ -1,6 +1,4 @@
-package com.company.been;
-
-import com.company.enums.availableChoicesForTossWinningTeam;
+package com.company.bean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,24 +6,20 @@ import java.util.List;
 public class ScoreBoard {
     private final int matchId;
     private Team tossWinningTeam;
-    private availableChoicesForTossWinningTeam tossWinningTeamChoice;
     private Team firstBattingTeam;
     private Team secondBattingTeam;
     private Team winningTeam;
     private int runMargin = 0;
     private int wicketMargin = 0;
-    private final int numberOfOversInAnInning;
-    private final DetailScoreBoardBallWise detailScoreBoardBallWise;
-    private final DetailScoreBoardOverWise detailScoreBoardOverWise;
+    private final int oversInInning;
+    private final BallWiseScoreBoard ballWiseScoreBoard;
+    private final OverWiseScoreBoard overWiseScoreBoard;
 
     public int getMatchId() {
         return matchId;
     }
     public Team getTossWinningTeam() {
         return tossWinningTeam;
-    }
-    public String getTossWinningTeamChoice() {
-        return String.valueOf(tossWinningTeamChoice);
     }
     public Team getFirstBattingTeam() {
         return firstBattingTeam;
@@ -42,10 +36,15 @@ public class ScoreBoard {
     public int getWicketMargin() {
         return wicketMargin;
     }
-    public int getNumberOfOversInAnInning() {
-        return numberOfOversInAnInning;
+    public int getOversInInning() {
+        return oversInInning;
     }
-
+    public BallWiseScoreBoard getBallWiseScoreBoard() {
+        return ballWiseScoreBoard;
+    }
+    public OverWiseScoreBoard getOverWiseScoreBoard() {
+        return overWiseScoreBoard;
+    }
 
     public void setTeams(Team firstBattingTeam, Team secondBattingTeam) {
         this.firstBattingTeam = firstBattingTeam;
@@ -55,15 +54,11 @@ public class ScoreBoard {
     {
         this.tossWinningTeam = tossWinningTeam;
     }
-    public void setTossWinningTeamChoice(availableChoicesForTossWinningTeam tossWinningTeamChoice){
-        this.tossWinningTeamChoice = tossWinningTeamChoice;
+    public void addBallStats(BallStats ballDetails, int inningNo) {
+        ballWiseScoreBoard.addBallStats(ballDetails, inningNo);
     }
-
-    public void updateDetailsScoreBoardBallWise(PerBallDetails ballDetails, int inningNo) {
-        detailScoreBoardBallWise.updateDetailsScoreBoardBallWise(ballDetails, inningNo);
-    }
-    public void updateDetailsScoreBoardOverWise(PerOverDetails overDetails,int inningNo) {
-        detailScoreBoardOverWise.updateDetailsScoreBoardOverWise(overDetails, inningNo);
+    public void addOverStats(OverStats overDetails, int inningNo) {
+        overWiseScoreBoard.addOverStats(overDetails, inningNo);
     }
     public void selectWinningTeam() {
         if(firstBattingTeam.getRunScore() > secondBattingTeam.getRunScore())
@@ -77,7 +72,6 @@ public class ScoreBoard {
             wicketMargin = 10 - secondBattingTeam.getWickets();
         }
     }
-
     private void printTeam(Team team) {
         System.out.println("Team - " + team.getName());
         System.out.println("\nTeam Players Details");
@@ -109,51 +103,68 @@ public class ScoreBoard {
             if(player.getBallsFaced() != 0)   strikeRate = ((float) player.getRunScore() / (float) player.getBallsFaced()) * 100;
 
             String wicketTakenByPlayerName;
-            if(player.getWicketTakenBy() == null) wicketTakenByPlayerName = "Not Name";
-            else wicketTakenByPlayerName = player.getWicketTakenBy().getName();
-            System.out.println(player.getId() + " " + player.getRunScore() + " " + player.getRunsGiven() + " " +  player.getBallsFaced()
-                    + " " + player.getBallsDelivered() + " " + player.getWicketsTaken() + " " + wicketTakenByPlayerName + " " +
-                    player.getNoOfDotBall() + " " + player.getNoOf1sScore() + " " + player.getNoOf2sScore() + " " + player.getNoOf3sScore() + " " +
-                    player.getNoOfFourScore() + " " + player.getNoOfSixScore() + " Given " + player.getNoOfDotBallGiven() + " " +
-                    player.getNoOf1sGiven() + " " + player.getNoOf2sGiven() + " " + player.getNoOf3sGiven() + " " + player.getNoOfFourGiven() + " " +
-                    player.getNoOfSixGiven() + " " + player.getWideBallDelivered() + " " + player.getNoBallDelivered()
+            if(player.getWicketTakenByBowler() == null) wicketTakenByPlayerName = "Not Name";
+            else wicketTakenByPlayerName = player.getWicketTakenByBowler().getName();
+            System.out.println(
+                    player.getPlayerId() + " " +
+                    player.getRunScore() + " " +
+                    player.getRunsGiven() + " " +
+                    player.getBallsFaced() + " " +
+                    player.getBallsBowled() + " " +
+                    player.getWicketsTaken() + " " +
+                    wicketTakenByPlayerName + " " +
+                    player.getDotBallsPlayed() + " " +
+                    player.getOneRunsScored() + " " +
+                    player.getTwoRunsScored() + " " +
+                    player.getThreeRunsScored() + " " +
+                    player.getFourRunsScored() + " " +
+                    player.getSixRunsScored() + " Given " +
+                    player.getDotBallsBowled() + " " +
+                    player.getOneRunBallsBowled() + " " +
+                    player.getTwoRunBallsBowled() + " " +
+                    player.getThreeRunBallsBowled() + " " +
+                    player.getFourRunBallsBowled() + " " +
+                    player.getSixRunBallsBowled() + " " +
+                    player.getWideBallsBowled() + " " +
+                    player.getNoBallsBowled()
             );
         }
         System.out.println("-----------------\n");
     }
-    private void printEveryOverDetails(List<PerOverDetails> inningsPerOverDetail) {
-        for(PerOverDetails perOverDetail : inningsPerOverDetail)
+    private void printEveryOverDetails(List<OverStats> inningsPerOverDetail) {
+        for(OverStats perOverDetail : inningsPerOverDetail)
         {
             System.out.println(
                     perOverDetail.getOverNumber() + " " +
-                    perOverDetail.getNoOfWickets() + " " +
+                    perOverDetail.getWickets() + " " +
                     perOverDetail.getRuns() + " " +
-                    perOverDetail.getNoOfDotBall() + " " +
-                    perOverDetail.getNoOf1s() + " " +
-                    perOverDetail.getNoOf2s() + " " +
-                    perOverDetail.getNoOf3s() + " " +
-                    perOverDetail.getNoOfFour() + " " +
-                    perOverDetail.getNoOfSix() + " " +
-                    perOverDetail.getWideBall() + " " +
-                    perOverDetail.getNoBall() + " " +
-                    perOverDetail.getBowlerId()
+                    perOverDetail.getPlayedDotBalls() + " " +
+                    perOverDetail.getOneRunsScored() + " " +
+                    perOverDetail.getTwoRunsScored() + " " +
+                    perOverDetail.getThreeRunsScored() + " " +
+                    perOverDetail.getFourRunsScored() + " " +
+                    perOverDetail.getSixRunsScored() + " " +
+                    perOverDetail.getWideBalls() + " " +
+                    perOverDetail.getNoBalls() + " " +
+                    perOverDetail.getBowlerId() + " " +
+                    perOverDetail.getTeamId()
             );
         }
     }
-    private void printEveryBallDetails(List<PerBallDetails> inningsPerBallDetail) {
-        for (PerBallDetails everyBallDetail : inningsPerBallDetail) {
+    private void printEveryBallDetails(List<BallStats> inningsPerBallDetail) {
+        for (BallStats everyBallDetail : inningsPerBallDetail) {
             System.out.println(
                     everyBallDetail.getOverNumber() + "." +
                     everyBallDetail.getBallNumberInOver() + " " +
                     everyBallDetail.getBatsman().getName() + " " +
                     everyBallDetail.getBowler().getName() + " " +
                     everyBallDetail.getBallOutcome().getDisplayName() + " " +
-                    everyBallDetail.getTeamScoreUpToThisBall() + " " +
-                    everyBallDetail.getWicketsUpToThisBall()
+                    everyBallDetail.getTeamScore() + " " +
+                    everyBallDetail.getTeamWickets()
             );
         }
     }
-    public void printWinningTeam() {
+    private void printWinningTeam() {
         selectWinningTeam();
         if(runMargin == 0 && wicketMargin == 0)
         {
@@ -171,27 +182,26 @@ public class ScoreBoard {
         teamList.add(firstBattingTeam);
         teamList.add(secondBattingTeam);
 
-        List<List<PerBallDetails>> inningsPerBallDetails = new ArrayList<>();
-        inningsPerBallDetails.add(detailScoreBoardBallWise.getFirstInningEveryBallDetails());
-        inningsPerBallDetails.add(detailScoreBoardBallWise.getSecondInningEveryBallDetails());
+        List<List<BallStats>> inningsPerBallDetails = new ArrayList<>();
+        inningsPerBallDetails.add(ballWiseScoreBoard.getFirstInningBallStats());
+        inningsPerBallDetails.add(ballWiseScoreBoard.getSecondInningBallStats());
 
-        List<List<PerOverDetails>> inningsPerOverDetails = new ArrayList<>();
-        inningsPerOverDetails.add(detailScoreBoardOverWise.getFirstInningOvers());
-        inningsPerOverDetails.add(detailScoreBoardOverWise.getSecondInningOvers());
+        List<List<OverStats>> inningsPerOverDetails = new ArrayList<>();
+        inningsPerOverDetails.add(overWiseScoreBoard.getFirstInningOverStats());
+        inningsPerOverDetails.add(overWiseScoreBoard.getSecondInningOverStats());
 
-        System.out.println(" Toss Win - "+tossWinningTeam.getName() +  " \t Choice - " + tossWinningTeamChoice);
         for(Team team: teamList) printTeam(team);
         for(Team team:teamList) printSummery(team);
-        for (List<PerOverDetails> inningsPerOverDetail : inningsPerOverDetails)printEveryOverDetails(inningsPerOverDetail);
-        for (List<PerBallDetails> inningsPerBallDetail : inningsPerBallDetails)printEveryBallDetails(inningsPerBallDetail);
+        for (List<OverStats> inningsPerOverDetail : inningsPerOverDetails)printEveryOverDetails(inningsPerOverDetail);
+        for (List<BallStats> inningsPerBallDetail : inningsPerBallDetails)printEveryBallDetails(inningsPerBallDetail);
         printWinningTeam();
     }
 
-    public ScoreBoard(int matchId, int numberOfOversInAnInning)
+    public ScoreBoard(int matchId, int oversInInning)
     {
         this.matchId = matchId;
-        this.numberOfOversInAnInning = numberOfOversInAnInning;
-        this.detailScoreBoardOverWise = new DetailScoreBoardOverWise(matchId,matchId);
-        this.detailScoreBoardBallWise = new DetailScoreBoardBallWise(matchId,matchId);
+        this.oversInInning = oversInInning;
+        this.overWiseScoreBoard = new OverWiseScoreBoard(matchId);
+        this.ballWiseScoreBoard = new BallWiseScoreBoard(matchId);
     }
 }

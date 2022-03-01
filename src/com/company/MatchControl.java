@@ -1,12 +1,9 @@
 package com.company;
 
 import com.company.databases.*;
-import com.company.been.CricketMatch;
-import com.company.been.Team;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.company.bean.CricketMatch;
+import com.company.bean.Team;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -15,6 +12,7 @@ public class MatchControl {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Connection conn = null;
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url = "jdbc:mysql://localhost:3306/CricketMatches";

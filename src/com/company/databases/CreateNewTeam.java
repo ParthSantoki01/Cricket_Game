@@ -1,7 +1,6 @@
 package com.company.databases;
 
 import com.company.enums.PlayerRole;
-
 import java.sql.*;
 import java.util.Scanner;
 
