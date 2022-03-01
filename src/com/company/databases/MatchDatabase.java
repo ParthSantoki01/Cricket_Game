@@ -1,16 +1,13 @@
 package com.company.databases;
 
-import com.company.been.ScoreBoard;
+import com.company.bean.ScoreBoard;
+import java.sql.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-public class UpdateMatchDatabase {
-    public static void enterMatchDetails(ScoreBoard scoreBoard, Connection conn)
+public class MatchDatabase {
+    public static void insertMatchDetails(ScoreBoard scoreBoard, Connection conn)
     {
         try {
-            String query = "insert into Matches (matchId, tossWinningTeamId, firstBattingTeamId, secondBattingTeamId, matchWinningTeamId, runMargin, wicketMargin, overInInning)" + " values (?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "insert into Matches (matchId, tossWinningTeamId, firstBattingTeamId, secondBattingTeamId, winningTeamId, runMargin, wicketMargin, oversInInning)" + " values (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1,scoreBoard.getMatchId());
             stmt.setInt(2,scoreBoard.getTossWinningTeam().getTeamId());
@@ -19,7 +16,7 @@ public class UpdateMatchDatabase {
             stmt.setInt(5,scoreBoard.getWinningTeam().getTeamId());
             stmt.setInt(6,scoreBoard.getRunMargin());
             stmt.setInt(7,scoreBoard.getWicketMargin());
-            stmt.setInt(8,scoreBoard.getNumberOfOversInAnInning());
+            stmt.setInt(8,scoreBoard.getOversInInning());
             stmt.executeUpdate();
             stmt.close();
         }

@@ -1,6 +1,6 @@
 package com.company.utility;
-import com.company.been.Player;
-import com.company.been.Team;
+import com.company.bean.Player;
+import com.company.bean.Team;
 
 public class UtilityOperations {
     private UtilityOperations() {}

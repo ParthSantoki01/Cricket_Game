@@ -1,16 +1,12 @@
 package com.company.databases;
 
-import com.company.been.CricketMatch;
-import com.company.been.Player;
-import com.company.been.Team;
+import com.company.bean.*;
 import com.company.enums.PlayerRole;
-
 import java.sql.*;
 import java.util.List;
 import java.util.Scanner;
 
 public class NewMatchSetUp {
-
     private static void setPlayersInTeam(List<Team> teamList, Connection conn, int teamId, int teamNo)
     {
         try {
