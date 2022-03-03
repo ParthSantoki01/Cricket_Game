@@ -12,8 +12,7 @@ public class ScoreBoard {
     private int runMargin = 0;
     private int wicketMargin = 0;
     private final int oversInInning;
-    private final BallWiseScoreBoard ballWiseScoreBoard;
-    private final OverWiseScoreBoard overWiseScoreBoard;
+    private final List<Over> overList = new ArrayList<>();
 
     public int getMatchId() {
         return matchId;
@@ -39,133 +38,67 @@ public class ScoreBoard {
     public int getOversInInning() {
         return oversInInning;
     }
-    public BallWiseScoreBoard getBallWiseScoreBoard() {
-        return ballWiseScoreBoard;
-    }
-    public OverWiseScoreBoard getOverWiseScoreBoard() {
-        return overWiseScoreBoard;
+    public List<Over> getOverList() {
+        return overList;
     }
 
-    public void setTeams(Team firstBattingTeam, Team secondBattingTeam) {
+    public void setFirstBattingTeam(Team firstBattingTeam) {
         this.firstBattingTeam = firstBattingTeam;
+    }
+    public void setSecondBattingTeam(Team secondBattingTeam) {
         this.secondBattingTeam = secondBattingTeam;
     }
     public void setTossWinningTeam(Team tossWinningTeam)
     {
         this.tossWinningTeam = tossWinningTeam;
     }
-    public void addBallStats(BallStats ballDetails, int inningNo) {
-        ballWiseScoreBoard.addBallStats(ballDetails, inningNo);
+    public void setWinningTeam(Team winningTeam) {
+        this.winningTeam = winningTeam;
     }
-    public void addOverStats(OverStats overDetails, int inningNo) {
-        overWiseScoreBoard.addOverStats(overDetails, inningNo);
+    public void setRunMargin(int runMargin) {
+        this.runMargin = runMargin;
     }
-    public void selectWinningTeam() {
-        if(firstBattingTeam.getRunScore() > secondBattingTeam.getRunScore())
+    public void setWicketMargin(int wicketMargin) {
+        this.wicketMargin = wicketMargin;
+    }
+
+    public void printScoreBoard() {
+
+        System.out.println("Toss win - " + tossWinningTeam.getName());
+        System.out.println("First Batting Team - " + firstBattingTeam.getName());
+
+        List<Team> teamList = new ArrayList<>();
+        teamList.add(firstBattingTeam);
+        teamList.add(secondBattingTeam);
+
+        for(Team team: teamList) printTeam(team);
+        for(Over over : overList)
         {
-            winningTeam = firstBattingTeam;
-            runMargin = firstBattingTeam.getRunScore() - secondBattingTeam.getRunScore();
+            System.out.println("Over -> " + over.getOverNumber() + " Bowler - " + over.getBowler().getName());
+            for(Ball ball: over.getBallList())
+            {
+                System.out.println("Ball -> " + ball.getBallNumberInOver() + "\t" + ball.getBatsman().getName() + "\t" + ball.getBallOutcome());
+            }
         }
-        else if(firstBattingTeam.getRunScore() < secondBattingTeam.getRunScore())
-        {
-            winningTeam = secondBattingTeam;
-            wicketMargin = 10 - secondBattingTeam.getWickets();
-        }
+        printWinningTeam();
     }
+
     private void printTeam(Team team) {
         System.out.println("Team - " + team.getName());
         System.out.println("\nTeam Players Details");
+        System.out.println("Runs - " + team.getRunScore());
+        System.out.println("Wickets - " + team.getWickets());
         for(byte i = 0; i < 11; i++)
         {
             Player player = team.getPlayerList().get(i);
-            System.out.print(player.getName() + " \t\t ");
-            System.out.print(player.getRole() + " ");
-            System.out.println("\t\tJersey number " + player.getJerseyNumber() + " ");
-        }
-        System.out.println("------------------------------------------------------------------------------------------------------\n");
-    }
-    private void printSummery(Team team) {
-        System.out.println("\n----------------------------------");
-        System.out.println("Team :- " + team.getName());
-        System.out.println("----------------------------------");
-        System.out.println("Summary");
-        System.out.println("Runs : \t\t" + team.getRunScore());
-        System.out.println("Over: \t\t" + team.getPlayedOvers());
-        System.out.println("Wickets:\t" + team.getWickets());
-        System.out.println("Wide: \t\t" + team.getWideRuns());
-        System.out.println("No Ball:\t" + team.getNoBallRuns());
-        System.out.println("-----------------\n");
-        System.out.println("Score Board\n");
-        for(byte i = 0; i < 11; i++)
-        {
-            Player player = team.getPlayerList().get(i);
-            float strikeRate = 0;
-            if(player.getBallsFaced() != 0)   strikeRate = ((float) player.getRunScore() / (float) player.getBallsFaced()) * 100;
-
-            String wicketTakenByPlayerName;
-            if(player.getWicketTakenByBowler() == null) wicketTakenByPlayerName = "Not Name";
-            else wicketTakenByPlayerName = player.getWicketTakenByBowler().getName();
-            System.out.println(
-                    player.getPlayerId() + " " +
-                    player.getRunScore() + " " +
-                    player.getRunsGiven() + " " +
-                    player.getBallsFaced() + " " +
-                    player.getBallsBowled() + " " +
-                    player.getWicketsTaken() + " " +
-                    wicketTakenByPlayerName + " " +
-                    player.getDotBallsPlayed() + " " +
-                    player.getOneRunsScored() + " " +
-                    player.getTwoRunsScored() + " " +
-                    player.getThreeRunsScored() + " " +
-                    player.getFourRunsScored() + " " +
-                    player.getSixRunsScored() + " Given " +
-                    player.getDotBallsBowled() + " " +
-                    player.getOneRunBallsBowled() + " " +
-                    player.getTwoRunBallsBowled() + " " +
-                    player.getThreeRunBallsBowled() + " " +
-                    player.getFourRunBallsBowled() + " " +
-                    player.getSixRunBallsBowled() + " " +
-                    player.getWideBallsBowled() + " " +
-                    player.getNoBallsBowled()
-            );
-        }
-        System.out.println("-----------------\n");
-    }
-    private void printEveryOverDetails(List<OverStats> inningsPerOverDetail) {
-        for(OverStats perOverDetail : inningsPerOverDetail)
-        {
-            System.out.println(
-                    perOverDetail.getOverNumber() + " " +
-                    perOverDetail.getWickets() + " " +
-                    perOverDetail.getRuns() + " " +
-                    perOverDetail.getPlayedDotBalls() + " " +
-                    perOverDetail.getOneRunsScored() + " " +
-                    perOverDetail.getTwoRunsScored() + " " +
-                    perOverDetail.getThreeRunsScored() + " " +
-                    perOverDetail.getFourRunsScored() + " " +
-                    perOverDetail.getSixRunsScored() + " " +
-                    perOverDetail.getWideBalls() + " " +
-                    perOverDetail.getNoBalls() + " " +
-                    perOverDetail.getBowlerId() + " " +
-                    perOverDetail.getTeamId()
-            );
-        }
-    }
-    private void printEveryBallDetails(List<BallStats> inningsPerBallDetail) {
-        for (BallStats everyBallDetail : inningsPerBallDetail) {
-            System.out.println(
-                    everyBallDetail.getOverNumber() + "." +
-                    everyBallDetail.getBallNumberInOver() + " " +
-                    everyBallDetail.getBatsman().getName() + " " +
-                    everyBallDetail.getBowler().getName() + " " +
-                    everyBallDetail.getBallOutcome().getDisplayName() + " " +
-                    everyBallDetail.getTeamScore() + " " +
-                    everyBallDetail.getTeamWickets()
-            );
+            System.out.print(player.getPlayerId() + "  ");
+            System.out.print(player.getName() + "  ");
+            System.out.print(player.getTeamId() + "  ");
+            System.out.print(player.getBattingOrder() + "  ");
+            System.out.println(player.getRole());
         }
     }
     private void printWinningTeam() {
-        selectWinningTeam();
         if(runMargin == 0 && wicketMargin == 0)
         {
             System.out.println("Match Tie");
@@ -177,31 +110,9 @@ public class ScoreBoard {
             System.out.print("Wicket Margin -> " + wicketMargin);
         }
     }
-    public void printScoreBoard() {
-        List<Team> teamList = new ArrayList<>();
-        teamList.add(firstBattingTeam);
-        teamList.add(secondBattingTeam);
-
-        List<List<BallStats>> inningsPerBallDetails = new ArrayList<>();
-        inningsPerBallDetails.add(ballWiseScoreBoard.getFirstInningBallStats());
-        inningsPerBallDetails.add(ballWiseScoreBoard.getSecondInningBallStats());
-
-        List<List<OverStats>> inningsPerOverDetails = new ArrayList<>();
-        inningsPerOverDetails.add(overWiseScoreBoard.getFirstInningOverStats());
-        inningsPerOverDetails.add(overWiseScoreBoard.getSecondInningOverStats());
-
-        for(Team team: teamList) printTeam(team);
-        for(Team team:teamList) printSummery(team);
-        for (List<OverStats> inningsPerOverDetail : inningsPerOverDetails)printEveryOverDetails(inningsPerOverDetail);
-        for (List<BallStats> inningsPerBallDetail : inningsPerBallDetails)printEveryBallDetails(inningsPerBallDetail);
-        printWinningTeam();
-    }
-
     public ScoreBoard(int matchId, int oversInInning)
     {
         this.matchId = matchId;
         this.oversInInning = oversInInning;
-        this.overWiseScoreBoard = new OverWiseScoreBoard(matchId);
-        this.ballWiseScoreBoard = new BallWiseScoreBoard(matchId);
     }
 }

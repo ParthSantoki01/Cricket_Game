@@ -1,8 +1,10 @@
 package com.company;
 
-import com.company.databases.*;
+import com.company.databases.DAO;
 import com.company.bean.CricketMatch;
 import com.company.bean.Team;
+import com.company.service.CricketGameServiceImpl;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +23,23 @@ public class MatchControl {
             e.printStackTrace();
         }
 
-        //  If You add New Team In DataBase.
-//        CreateNewTeam.makeTeam(sc, conn);
+        DAO dataAccessObject = new DAO();
+
+        System.out.println("You want to add new Team. Press Y for yes.");
+        String check = sc.nextLine();
+        if(check.equals("Y"))
+        {
+            dataAccessObject.createNewTeam(sc, conn);
+        }
 
         List<Team> teamList = new ArrayList<>();
-
         System.out.print("Enter Number of Match Over : ");
         int totalOver = sc.nextInt();
 
-        CricketMatch cricketMatch = NewMatchSetUp.newCricketGame(sc, teamList, totalOver, conn);
-        cricketMatch.tossOfMatch(teamList);
-        cricketMatch.startGame(teamList,conn);
+        CricketMatch cricketMatch = dataAccessObject.createNewMatch(teamList,totalOver,conn);
+        CricketGameServiceImpl cricketGameService = new CricketGameServiceImpl();
+        cricketGameService.startGame(cricketMatch,teamList);
+        dataAccessObject.insertMatchData(cricketMatch,conn);
 
         try {
             conn.close();

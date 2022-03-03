@@ -4,7 +4,7 @@ import com.company.bean.ScoreBoard;
 import java.sql.*;
 
 public class MatchDatabase {
-    public static void insertMatchDetails(ScoreBoard scoreBoard, Connection conn)
+    public void insertMatchDetails(ScoreBoard scoreBoard, Connection conn)
     {
         try {
             String query = "insert into Matches (matchId, tossWinningTeamId, firstBattingTeamId, secondBattingTeamId, winningTeamId, runMargin, wicketMargin, oversInInning)" + " values (?, ?, ?, ?, ?, ?, ?, ?)";
