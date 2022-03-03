@@ -1,22 +1,20 @@
 package com.company.enums;
 
 public enum PossibleOutputOfBall {
-    Run_0("0 Run"),
-    Run_1("1 Run"),
-    Run_2("2 Run"),
-    Run_3("3 Run"),
-    Run_4("4 Run"),
-    Run_6("6 Run"),
-    Wide("Wide"),
-    NoBall("No Ball"),
-    Wicket("Wicket");
+    RUN_0("0 Run"),
+    RUN_1("1 Run"),
+    RUN_2("2 Run"),
+    RUN_3("3 Run"),
+    RUN_4("4 Run"),
+    RUN_6("6 Run"),
+    WIDE("Wide"),
+    NO_BALL("No Ball"),
+    WICKET("Wicket");
 
     private final String displayName;
-
     PossibleOutputOfBall(String displayName) {
         this.displayName = displayName;
     }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -26,17 +24,16 @@ public enum PossibleOutputOfBall {
     private static final double[] probabilityArrayOfBowler =    {0.50, 0.20, 0.10, 0.02, 0.040, 0.02, 0.05, 0.02, 0.050};
 
     public static PossibleOutputOfBall getOutcomeOfBall(PlayerRole playerRole) {
-
         double randomNumber = Math.random();
         double probabilitySum = 0.0;
-        if (playerRole == PlayerRole.Batsman || playerRole == PlayerRole.Wicketkeeper) {
+        if (playerRole == PlayerRole.BATSMAN || playerRole == PlayerRole.WICKETKEEPER) {
             for (int i = 0; i < values().length; i++) {
                 probabilitySum += probabilityArrayOfBatsman[i];
                 if (randomNumber <= probabilitySum) {
                     return values()[i];
                 }
             }
-        } else if (playerRole == PlayerRole.Bowler) {
+        } else if (playerRole == PlayerRole.BOWLER) {
             for (int i = 0; i < values().length; i++) {
                 probabilitySum += probabilityArrayOfBowler[i];
                 if (randomNumber <= probabilitySum) {

@@ -4,10 +4,9 @@ import com.company.bean.*;
 import com.company.enums.PlayerRole;
 import java.sql.*;
 import java.util.List;
-import java.util.Scanner;
 
-public class NewMatchSetUp {
-    private static void setPlayersInTeam(List<Team> teamList, Connection conn, int teamId, int teamNo)
+public class CreateNewMatch {
+    private void setPlayersInTeam(List<Team> teamList, Connection conn, int teamId, int teamNo)
     {
         try {
             String playerQuery = "select * from Players where teamId = (?)";
@@ -17,11 +16,11 @@ public class NewMatchSetUp {
             while (playerResults.next())
             {
                 String playerRoleInString = playerResults.getString(4);
-                PlayerRole playerRole = null;
-                if(String.valueOf(PlayerRole.Batsman).equals(playerRoleInString)) playerRole = PlayerRole.Batsman;
-                else if(String.valueOf(PlayerRole.Bowler).equals(playerRoleInString)) playerRole = PlayerRole.Bowler;
-                else playerRole = PlayerRole.Wicketkeeper;
-                teamList.get(teamNo).getPlayerList().add(new Player(playerResults.getInt(1),playerResults.getString(2),playerResults.getInt(3),playerRole,playerResults.getInt(5),playerResults.getInt(6)));
+                PlayerRole playerRole;
+                if(String.valueOf(PlayerRole.BATSMAN).equals(playerRoleInString)) playerRole = PlayerRole.BATSMAN;
+                else if(String.valueOf(PlayerRole.BOWLER).equals(playerRoleInString)) playerRole = PlayerRole.BOWLER;
+                else playerRole = PlayerRole.WICKETKEEPER;
+                teamList.get(teamNo).getPlayerList().add(new Player(playerResults.getInt(1),playerResults.getString(2),playerResults.getInt(3),playerRole,playerResults.getInt(5)));
             }
             playerStmt.close();
         }
@@ -30,7 +29,7 @@ public class NewMatchSetUp {
             e.printStackTrace();
         }
     }
-    private static void setTeams(List<Team> teamList, Connection conn)
+    private void setTeams(List<Team> teamList, Connection conn)
     {
         try {
             String noOfTeamQuery = "select count(*) from Teams";
@@ -67,7 +66,7 @@ public class NewMatchSetUp {
             e.printStackTrace();
         }
     }
-    public static CricketMatch newCricketGame(Scanner sc, List<Team> teamList, int totalOver, Connection conn)
+    public CricketMatch newCricketGame(List<Team> teamList, int totalOver, Connection conn)
     {
         int matchId = 0;
         try {
