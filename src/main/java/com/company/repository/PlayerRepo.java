@@ -15,7 +15,7 @@ public class PlayerRepo {
     public boolean isPlayerAvailable(int playerId) {
         try {
             Connection conn = DbConnector.getConnection();
-            String playerQuery = "select count(*) from Players where playerId = (?)";
+            String playerQuery = "select count(*) from Players where playerId = (?) and deleted = false";
             PreparedStatement playerStmt = conn.prepareStatement(playerQuery);
             playerStmt.setInt(1, playerId);
             ResultSet playerResult = playerStmt.executeQuery();
@@ -25,6 +25,23 @@ public class PlayerRepo {
             if(count == 0)return false;
             else return true;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean isPlayerAvailableInMatch(int playerId, int matchId) {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String playerQuery = " select count(*) from (select firstBattingTeamId,secondBattingTeamId,teamId from matches join players where players.playerId = (?) and matches.matchId = (?) and players.deleted = false and matches.deleted = false) as t1 where t1.firstBattingTeamId = t1.teamId or t1.secondBattingTeamId = t1.teamId";
+            PreparedStatement playerStmt = conn.prepareStatement(playerQuery);
+            playerStmt.setInt(1, playerId);
+            playerStmt.setInt(2, matchId);
+            ResultSet playerResult = playerStmt.executeQuery();
+            playerResult.next();
+            int count = playerResult.getInt(1);
+            DbConnector.closeConnection();
+            return count != 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -135,10 +152,7 @@ public class PlayerRepo {
                     teamList.get(i).getPlayerList().add(new Player(playerResults.getInt(1),playerResults.getString(2),playerResults.getInt(3),playerRole,playerResults.getInt(5),playerResults.getLong(6),playerResults.getLong(7),playerResults.getBoolean(8)));
                 }
                 playerStmt.close();
-                if(teamList.get(i).getPlayerList().size() != 11)
-                {
-                    return false;
-                }
+                if(teamList.get(i).getPlayerList().size() != 11) return false;
             }
             DbConnector.closeConnection();
             return true;
@@ -176,6 +190,40 @@ public class PlayerRepo {
         }
         catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    public String updatePlayerName(String playerName, int playerId) {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String playerQuery = "update Players set playerName = (?) where playerId = (?)";
+            PreparedStatement stmt = conn.prepareStatement(playerQuery);
+            stmt.setString(1,playerName);
+            stmt.setInt(2, playerId);
+            stmt.executeUpdate();
+            DbConnector.closeConnection();
+            return "Success, PlayerName Updated";
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return "Error, Player Name Can not Update";
+        }
+    }
+    public String getBowlerInOver(int matchId, int battingTeamId, int overNumber) {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String bowlerQuery = "select bowlerId from Overs where matchId = (?) and battingTeamId = (?) and overNumber = (?)";
+            PreparedStatement bowlerStmt = conn.prepareStatement(bowlerQuery);
+            bowlerStmt.setInt(1, matchId);
+            bowlerStmt.setInt(2, battingTeamId);
+            bowlerStmt.setInt(3, overNumber);
+            ResultSet bowlerResult = bowlerStmt.executeQuery();
+            bowlerResult.next();
+            int bowlerId = bowlerResult.getInt(1);
+            DbConnector.closeConnection();
+            return getPlayerNameById(bowlerId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error";
         }
     }
 }

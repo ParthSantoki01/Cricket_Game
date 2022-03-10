@@ -24,10 +24,10 @@ public class MatchControl {
 //        if(!playerRepo.setPlayerInTeam(teamList))return;
 //
 //        OverRepo overRepo = new OverRepo();
-//        int newOverId = overRepo.getNoOfOverInDatabase();
+//        int newOverId = overRepo.getNewOverId();
 //
 //        BallRepo ballRepo = new BallRepo();
-//        int newBallId = ballRepo.getNoOfBallInDatabase();
+//        int newBallId = ballRepo.getNewBallID();
 //
 //        System.out.println("Enter Number Of Over: ");
 //        int overInInning = sc.nextInt();

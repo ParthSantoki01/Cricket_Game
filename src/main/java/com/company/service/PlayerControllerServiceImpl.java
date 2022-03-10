@@ -29,7 +29,7 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
             {
                 List<String> playerInformation = new ArrayList<>();
                 playerRepo.getPlayerInfo(i,playerInformation);
-                playerList.add(new PlayerInfo(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),playerInformation.get(4)));
+                playerList.add(new PlayerInfo(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),teamRepo.getTeamName(Integer.parseInt(playerInformation.get(4)))));
             }
         }
         return playerList;
@@ -41,7 +41,7 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
         {
             List<String> playerInformation = new ArrayList<>();
             playerRepo.getPlayerInfo(playerId,playerInformation);
-            return new PlayerInfo(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),playerInformation.get(4));
+            return new PlayerInfo(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),teamRepo.getTeamName(Integer.parseInt(playerInformation.get(4))));
         }
         else
         {
@@ -51,14 +51,14 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
 
     @Override
     public PlayerStats getPlayerStats(int playerId, int matchId) {
+        if(!playerRepo.isPlayerAvailableInMatch(playerId,matchId)) return null;
         List<String> playerInformation = new ArrayList<>();
         playerRepo.getPlayerInfo(playerId,playerInformation);
-        PlayerStats player = new PlayerStats(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),playerInformation.get(4));
+        PlayerStats player = new PlayerStats(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3), teamRepo.getTeamName(Integer.parseInt(playerInformation.get(4))));
 
         List<List<String>> battingOutcome = new ArrayList<>();
         playerRepo.getPlayerBattingOutcomeInMatch(playerId,matchId,battingOutcome);
-        for(List<String> outcome : battingOutcome)
-        {
+        for(List<String> outcome : battingOutcome) {
             switch (PossibleOutputOfBall.valueOf(outcome.get(0))) {
                 case RUN_0:
                     player.addDotBallPlayed();
@@ -98,8 +98,7 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
 
         List<String> bowlingOutcome = new ArrayList<>();
         playerRepo.getPlayerBowlerOutcomeInMatch(playerId,matchId,bowlingOutcome);
-        for (String stats : bowlingOutcome)
-        {
+        for (String stats : bowlingOutcome) {
             switch (PossibleOutputOfBall.valueOf(stats)) {
                 case RUN_0:
                     player.addDotBallsDelivered();
@@ -145,5 +144,11 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
             }
         }
         return player;
+    }
+
+    @Override
+    public String updatePlayerName(String playerName, int playerId)
+    {
+        return playerRepo.updatePlayerName(playerName,playerId);
     }
 }

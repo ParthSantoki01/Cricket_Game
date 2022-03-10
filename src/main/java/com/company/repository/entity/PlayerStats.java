@@ -5,7 +5,7 @@ public class PlayerStats {
     private String name;
     private String battingOrder;
     private String role;
-    private String teamId;
+    private String teamName;
     private int runScore;
     private int ballPlayed;
     private int dotBallPlayed;
@@ -27,12 +27,12 @@ public class PlayerStats {
     private int wideBallsDelivered;
     private int noBallsDelivered;
 
-    public PlayerStats(String playerId, String name, String battingOrder, String role, String teamId) {
+    public PlayerStats(String playerId, String name, String battingOrder, String role, String teamName) {
         this.playerId = playerId;
         this.name = name;
         this.battingOrder = battingOrder;
         this.role = role;
-        this.teamId = teamId;
+        this.teamName = teamName;
     }
 
     public String getPlayerId() {
@@ -47,8 +47,8 @@ public class PlayerStats {
     public String getRole() {
         return role;
     }
-    public String getTeamId() {
-        return teamId;
+    public String getTeamName() {
+        return teamName;
     }
     public int getRunScore() {
         return runScore;

@@ -4,6 +4,7 @@ public class TeamStats {
     private int teamId;
     private String teamName;
     private int runScore;
+    private String playerOver;
     private int wickets;
     private int wideRuns;
     private int noBallRuns;
@@ -18,6 +19,9 @@ public class TeamStats {
     }
     public int getRunScore() {
         return runScore;
+    }
+    public String getPlayerOver() {
+        return playerOver;
     }
     public int getWickets() {
         return wickets;
@@ -37,6 +41,9 @@ public class TeamStats {
 
     public void addRunScore(int runScore) {
         this.runScore += runScore;
+    }
+    public void setPlayerOver(String playerOver) {
+        this.playerOver = playerOver;
     }
     public void addWickets() {
         this.wickets++;

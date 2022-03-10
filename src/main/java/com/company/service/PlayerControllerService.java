@@ -9,4 +9,5 @@ public interface PlayerControllerService {
     List<PlayerInfo> getAllPlayers();
     PlayerInfo getPlayerInfo(int playerId);
     PlayerStats getPlayerStats(int playerId, int matchId);
+    String updatePlayerName(String playerName, int playerId);
 }

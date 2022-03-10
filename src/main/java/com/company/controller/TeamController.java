@@ -2,7 +2,7 @@ package com.company.controller;
 
 import com.company.repository.entity.PlayerInfo;
 import com.company.repository.entity.TeamInfo;
-import com.company.service.TeamControllerServiceImpl;
+import com.company.service.TeamControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class TeamController {
 
     @Autowired
-    private TeamControllerServiceImpl teamControllerService;
+    private TeamControllerService teamControllerService;
 
     @GetMapping("/")
     public List<TeamInfo> getAllTeam()
@@ -28,14 +28,17 @@ public class TeamController {
     }
 
     @GetMapping("/{teamId}/player")
-    public List<PlayerInfo> getPlayerInfo(@PathVariable int teamId)
-    {
+    public List<PlayerInfo> getPlayerInfo(@PathVariable int teamId) {
         return teamControllerService.getTeamPlayer(teamId);
     }
+
     @PostMapping("/new")
-    public String insertNewTeam(@RequestBody String[] teamDetails)
-    {
+    public String insertNewTeam(@RequestBody String[] teamDetails) {
         return teamControllerService.insertNewTeam(teamDetails);
-//        return teamDetails[5];
+    }
+
+    @PutMapping("/{teamId}")
+    public String updatePlayerName(@RequestBody String teamName,@PathVariable int teamId) {
+        return teamControllerService.updateTeamName(teamName,teamId);
     }
 }
