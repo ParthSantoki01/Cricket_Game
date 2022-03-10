@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.List;
 @Service
 public class BallRepo {
-    public int getNoOfBallInDatabase() {
+    public int getNewBallID() {
         int ballId = 0;
         try {
             Connection conn = DbConnector.getConnection();

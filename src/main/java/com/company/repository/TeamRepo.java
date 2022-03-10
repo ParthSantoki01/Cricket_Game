@@ -11,6 +11,91 @@ import java.util.List;
 
 @Service
 public class TeamRepo {
+    public boolean isTeamAvailable(int teamId) {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String teamQuery = "select count(*) from Teams where teamId = (?) and deleted = false";
+            PreparedStatement teamStmt = conn.prepareStatement(teamQuery);
+            teamStmt.setInt(1, teamId);
+            ResultSet teamResult = teamStmt.executeQuery();
+            teamResult.next();
+            int count = teamResult.getInt(1);
+            DbConnector.closeConnection();
+            return count != 0;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public int getNewTeamId() {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String teamQuery = "select count(*) from Teams";
+            Statement teamStmt = conn.createStatement();
+            ResultSet teamResults = teamStmt.executeQuery(teamQuery);
+            teamResults.next();
+            int lastTeamId = teamResults.getInt(1) + 1;
+            teamResults.close();
+            DbConnector.closeConnection();
+            return lastTeamId;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public int noOfTeamInDatabase() {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String teamQuery = "select count(*) from Teams where deleted = false";
+            Statement teamStmt = conn.createStatement();
+            ResultSet teamResults = teamStmt.executeQuery(teamQuery);
+            teamResults.next();
+            int lastTeamId = teamResults.getInt(1) + 1;
+            teamResults.close();
+            DbConnector.closeConnection();
+            return lastTeamId;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public boolean getTeams(List<Team> teamList) {
+        try {
+            int noOfTeams = noOfTeamInDatabase();
+            if(noOfTeams < 2) return false;
+
+            int team1Id;
+            int team2Id;
+            do {
+                team1Id = 1 + (int) (Math.random() * noOfTeams);
+                team2Id = 1 + (int) (Math.random() * noOfTeams);
+            } while ((team1Id == team2Id) || !isTeamAvailable(team1Id) || !isTeamAvailable(team2Id));
+
+            int[] randomTeamIds = {team1Id,team2Id};
+            Connection conn = DbConnector.getConnection();
+            for (int randomTeamId : randomTeamIds) {
+                String teamQuery = "select * from Teams where teamId = (?)";
+                PreparedStatement teamStmt = conn.prepareStatement(teamQuery);
+                teamStmt.setInt(1, randomTeamId);
+                ResultSet teamResult = teamStmt.executeQuery();
+                teamResult.next();
+                teamList.add(new Team(teamResult.getInt(1), teamResult.getString(2), teamResult.getLong(3), teamResult.getLong(4), teamResult.getBoolean(5)));
+                teamStmt.close();
+            }
+            conn.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
     public int insertTeamData(String[] teamDetails) {
         try {
             int teamId = getNewTeamId();
@@ -32,64 +117,24 @@ public class TeamRepo {
             return 0;
         }
     }
-
-
-    public boolean getTeams(List<Team> teamList) {
+    public List<String> getTeamOutcomes(int teamId, int matchId) {
         try {
             Connection conn = DbConnector.getConnection();
-            String noOfTeamQuery = "select count(*) from Teams";
-            Statement noOfTeamStmt = conn.createStatement();
-            ResultSet noOfTeamResult = noOfTeamStmt.executeQuery(noOfTeamQuery);
-            noOfTeamResult.next();
-            int noOfTeamInDatabase = noOfTeamResult.getInt(1);
-
-            if(noOfTeamInDatabase < 2)
-            {
-                return false;
-            }
-
-            int team1Id;
-            int team2Id;
-            do{
-                team1Id = 1 + (int) (Math.random() * noOfTeamInDatabase);
-                team2Id = 1 + (int) (Math.random() * noOfTeamInDatabase);
-            }
-            while (team1Id == team2Id);
-
-            int[] randomTeamIds = {team1Id,team2Id};
-
-            for (int randomTeamId : randomTeamIds) {
-                String teamQuery = "select * from Teams where teamId = (?)";
-                PreparedStatement teamStmt = conn.prepareStatement(teamQuery);
-                teamStmt.setInt(1, randomTeamId);
-                ResultSet teamResult = teamStmt.executeQuery();
-                teamResult.next();
-                teamList.add(new Team(teamResult.getInt(1), teamResult.getString(2), teamResult.getLong(3), teamResult.getLong(4), teamResult.getBoolean(5)));
-                teamStmt.close();
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-    public boolean isTeamAvailable(int teamId) {
-        try {
-            Connection conn = DbConnector.getConnection();
-            String teamQuery = "select count(*) from Teams where teamId = (?)";
+            String teamQuery = "select ballOutcome from Balls join (select * from Overs where matchId = (?)) as overs where Balls.overId = overs.overId and battingTeamId = (?)";
             PreparedStatement teamStmt = conn.prepareStatement(teamQuery);
-            teamStmt.setInt(1, teamId);
+            teamStmt.setInt(1, matchId);
+            teamStmt.setInt(2, teamId);
             ResultSet teamResult = teamStmt.executeQuery();
-            teamResult.next();
-            int count = teamResult.getInt(1);
+            List<String> teamOutcome = new ArrayList<>();
+            while (teamResult.next())
+            {
+                teamOutcome.add(teamResult.getString(1));
+            }
             DbConnector.closeConnection();
-            return count != 0;
-        }
-        catch (SQLException e) {
+            return teamOutcome;
+        } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
     public List<PlayerInfo> getTeamPlayers(int teamId) {
@@ -110,24 +155,6 @@ public class TeamRepo {
         catch (SQLException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-    public int getNewTeamId() {
-        try {
-            Connection conn = DbConnector.getConnection();
-            String teamQuery = "select count(*) from Teams";
-            Statement teamStmt = conn.createStatement();
-            ResultSet teamResults = teamStmt.executeQuery(teamQuery);
-            teamResults.next();
-            int lastTeamId = teamResults.getInt(1) + 1;
-            teamResults.close();
-            DbConnector.closeConnection();
-            return lastTeamId;
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            return 0;
         }
     }
     public List<String> getTeamInfo(int teamId) {
@@ -164,28 +191,6 @@ public class TeamRepo {
             return "Error";
         }
     }
-
-    public List<String> getTeamOutcomes(int teamId, int matchId) {
-        try {
-            Connection conn = DbConnector.getConnection();
-            String teamQuery = "select ballOutcome from Balls join (select * from Overs where matchId = (?)) as overs where Balls.overId = overs.overId and battingTeamId = (?)";
-            PreparedStatement teamStmt = conn.prepareStatement(teamQuery);
-            teamStmt.setInt(1, matchId);
-            teamStmt.setInt(2, teamId);
-            ResultSet teamResult = teamStmt.executeQuery();
-            List<String> teamOutcome = new ArrayList<>();
-            while (teamResult.next())
-            {
-                teamOutcome.add(teamResult.getString(1));
-            }
-            DbConnector.closeConnection();
-            return teamOutcome;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public void getTeamsIdInMatch(List<Integer> teamIdList, int matchId) {
         try {
             Connection conn = DbConnector.getConnection();
@@ -199,6 +204,22 @@ public class TeamRepo {
             DbConnector.closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    public String updateTeamName(String teamName, int teamId) {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String teamQuery = "update Teams set teamName = (?) where teamId = (?)";
+            PreparedStatement stmt = conn.prepareStatement(teamQuery);
+            stmt.setString(1,teamName);
+            stmt.setInt(2, teamId);
+            stmt.executeUpdate();
+            DbConnector.closeConnection();
+            return "Success, TeamName Updated";
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return "Error, Team Name Can not Update";
         }
     }
 }

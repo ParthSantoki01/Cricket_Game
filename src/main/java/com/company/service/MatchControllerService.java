@@ -9,5 +9,6 @@ public interface MatchControllerService {
     int startNewMatch(int overInInning);
     MatchInfo getMatch(int matchId);
     List<MatchInfo> getMatch();
-    List<TeamStats> getMatchTeamStats(int matchId);
+    List<TeamStats> getMatchTeamsStats(int matchId);
+    String deleteMatchDetails(int matchId);
 }

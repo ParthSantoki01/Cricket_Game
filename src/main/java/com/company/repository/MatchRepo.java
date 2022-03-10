@@ -10,13 +10,13 @@ import java.sql.*;
 
 @Service
 public class MatchRepo {
-
     @Autowired
     private TeamRepo teamRepo;
+
     public boolean isMatchAvailable(int matchId) {
         try {
             Connection conn = DbConnector.getConnection();
-            String matchQuery = "select count(*) from Matches where matchId = (?)";
+            String matchQuery = "select count(*) from Matches where matchId = (?) and deleted = false";
             PreparedStatement matchStmt = conn.prepareStatement(matchQuery);
             matchStmt.setInt(1, matchId);
             ResultSet matchResult = matchStmt.executeQuery();
@@ -46,6 +46,22 @@ public class MatchRepo {
         {
             e.printStackTrace();
             return -1;
+        }
+    }
+    public int getOverInInning(int matchId) {
+        try {
+            Connection conn = DbConnector.getConnection();
+            String getMatchQuery = "select oversInInning from Matches where matchId = (?)";
+            PreparedStatement getMatchStmt = conn.prepareStatement(getMatchQuery);
+            getMatchStmt.setInt(1, matchId);
+            ResultSet matchResult = getMatchStmt.executeQuery();
+            matchResult.next();
+            int overInInning = matchResult.getInt(1);
+            DbConnector.closeConnection();
+            return overInInning;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
     public MatchInfo getMatch(int matchId) {
@@ -91,6 +107,26 @@ public class MatchRepo {
         {
             e.printStackTrace();
             return "Error";
+        }
+    }
+    public String deleteMatchDetails(int matchId) {
+        if(!isMatchAvailable(matchId)) return "Error, MatchId Is Invalid.";
+        try {
+            Connection conn = DbConnector.getConnection();
+            String query1 = "update Balls set deleted = true where overId in (select overId from Overs where matchId = " + matchId +");";
+            String query2 = "update Overs set deleted = true where matchId = " + matchId + ";";
+            String query3 = "update Matches set deleted = true where matchId = " + matchId + ";";
+
+            Statement matchStmt = conn.createStatement();
+            matchStmt.addBatch(query1);
+            matchStmt.addBatch(query2);
+            matchStmt.addBatch(query3);
+            matchStmt.executeBatch();
+            conn.close();
+            return "Match " + matchId + " was Deleted.";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Database error.";
         }
     }
 }

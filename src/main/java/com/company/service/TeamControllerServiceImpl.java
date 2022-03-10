@@ -54,4 +54,9 @@ public class TeamControllerServiceImpl implements TeamControllerService {
         playerRepo.addPlayerInTeam(teamId,teamDetails);
         return "Team Insert Successfully With teamId = " + teamId;
     }
+
+    @Override
+    public String updateTeamName(String teamName, int teamId) {
+        return teamRepo.updateTeamName(teamName,teamId);
+    }
 }

@@ -2,7 +2,7 @@ package com.company.controller;
 
 import com.company.repository.entity.MatchInfo;
 import com.company.repository.entity.TeamStats;
-import com.company.service.MatchControllerServiceImpl;
+import com.company.service.MatchControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class MatchController {
 
     @Autowired
-    private MatchControllerServiceImpl matchControllerService;
+    private MatchControllerService matchControllerService;
 
     @GetMapping("/")
     public List<MatchInfo> getAllMatch()
@@ -42,6 +42,11 @@ public class MatchController {
 
     @GetMapping("/{matchId}/teams")
     public List<TeamStats> getTeamsStats(@PathVariable int matchId) {
-        return matchControllerService.getMatchTeamStats(matchId);
+        return matchControllerService.getMatchTeamsStats(matchId);
+    }
+
+    @DeleteMapping("/{matchId}")
+    public String deleteMatchDetails(@PathVariable int matchId) {
+        return matchControllerService.deleteMatchDetails(matchId);
     }
 }
