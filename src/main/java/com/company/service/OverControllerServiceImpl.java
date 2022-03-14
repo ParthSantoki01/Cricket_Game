@@ -1,11 +1,8 @@
 package com.company.service;
 
 import com.company.enums.PossibleOutputOfBall;
-import com.company.repository.MatchRepo;
-import com.company.repository.OverRepo;
-import com.company.repository.PlayerRepo;
-import com.company.repository.TeamRepo;
-import com.company.repository.entity.OverStats;
+import com.company.repository.*;
+import com.company.response.OverStatsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,19 +21,18 @@ public class OverControllerServiceImpl implements OverControllerService {
     private PlayerRepo playerRepo;
 
     @Override
-    public List<OverStats> getOverDetails(int matchId) {
+    public List<OverStatsResponse> getOverDetails(int matchId) {
         if(!matchRepo.isMatchAvailable(matchId))return null;
         int overInInning = matchRepo.getOverInInning(matchId);
-        List<Integer> teamsIdInMatch = new ArrayList<>();
-        teamRepo.getTeamsIdInMatch(teamsIdInMatch,matchId);
-
-        List<OverStats> overStatsList = new ArrayList<>();
+        List<Integer> teamsIdInMatch = matchRepo.getTeamsIdInMatch(matchId);
+        List<OverStatsResponse> overStatsList = new ArrayList<>();
         for(int teamId : teamsIdInMatch) {
             for(int i = 1; i <= overInInning; i++) {
                 if(!overRepo.isOverAvailableInMatch(matchId,teamId,i)) break;
                 List<String> overOutcome = overRepo.getOverDetailInMatch(matchId,teamId,i);
                 String bowlerName = playerRepo.getBowlerInOver(matchId,teamId,i);
-                OverStats overStats = new OverStats(teamRepo.getTeamName(teamId),bowlerName,i);
+                String teamName = teamRepo.getTeamName(teamId);
+                OverStatsResponse overStats = new OverStatsResponse(teamName,bowlerName,i);
                 for(String ballOutcome : overOutcome)
                 {
                     switch (PossibleOutputOfBall.valueOf(ballOutcome)) {

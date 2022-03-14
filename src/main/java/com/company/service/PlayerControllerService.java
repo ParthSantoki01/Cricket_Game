@@ -1,13 +1,13 @@
 package com.company.service;
 
-import com.company.repository.entity.PlayerInfo;
-import com.company.repository.entity.PlayerStats;
+import com.company.bean.Players;
+import com.company.response.PlayerStatsResponse;
 
 import java.util.List;
 
 public interface PlayerControllerService {
-    List<PlayerInfo> getAllPlayers();
-    PlayerInfo getPlayerInfo(int playerId);
-    PlayerStats getPlayerStats(int playerId, int matchId);
+    List<Players> getAllPlayers();
+    Players getPlayer(int playerId);
+    PlayerStatsResponse getPlayerStats(int playerId, int matchId);
     String updatePlayerName(String playerName, int playerId);
 }

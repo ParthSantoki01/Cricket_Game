@@ -1,15 +1,25 @@
 package com.company.bean;
 import com.company.enums.PossibleOutputOfBall;
 
-public class Ball {
-    private final int ballId;
-    private final int overId;
-    private final int ballNumberInOver;
-    private final Player batsman;
+public class Balls {
+    private int ballId;
+    private int overId;
+    private int ballNumberInOver;
+    private int batsmanId;
     private PossibleOutputOfBall ballOutcome;
     private long createdTime;
     private long modifiedTime;
     private boolean deleted;
+
+    public Balls(int ballId, int overId, int ballNumberInOver, int batsmanId, long createdTime, long modifiedTime, boolean deleted) {
+        this.ballId = ballId;
+        this.overId = overId;
+        this.ballNumberInOver = ballNumberInOver;
+        this.batsmanId = batsmanId;
+        this.createdTime = createdTime;
+        this.modifiedTime = modifiedTime;
+        this.deleted = deleted;
+    }
 
     public int getBallId() {
         return ballId;
@@ -20,8 +30,8 @@ public class Ball {
     public int getBallNumberInOver() {
         return ballNumberInOver;
     }
-    public Player getBatsman() {
-        return batsman;
+    public int getBatsmanId() {
+        return batsmanId;
     }
     public PossibleOutputOfBall getBallOutcome() {
         return ballOutcome;
@@ -38,15 +48,5 @@ public class Ball {
 
     public void setBallOutcome(PossibleOutputOfBall ballOutcome) {
         this.ballOutcome = ballOutcome;
-    }
-
-    public Ball(int ballId, int overId ,int ballNumberInOver, Player batsman, Long createdTime, Long modifiedTime, boolean deleted) {
-        this.ballId = ballId;
-        this.overId = overId;
-        this.ballNumberInOver = ballNumberInOver;
-        this.batsman = batsman;
-        this.createdTime = createdTime;
-        this.modifiedTime = modifiedTime;
-        this.deleted = deleted;
     }
 }

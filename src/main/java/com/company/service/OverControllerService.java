@@ -1,9 +1,9 @@
 package com.company.service;
 
-import com.company.repository.entity.OverStats;
+import com.company.response.OverStatsResponse;
 
 import java.util.List;
 
 public interface OverControllerService {
-    List<OverStats> getOverDetails(int matchId);
+    List<OverStatsResponse> getOverDetails(int matchId);
 }

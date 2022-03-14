@@ -1,21 +1,22 @@
 package com.company.utils;
-import com.company.bean.Player;
-import com.company.bean.Team;
+import com.company.bean.Players;
 import com.company.enums.PossibleOutputOfBall;
+
+import java.util.List;
 
 import static java.lang.Math.max;
 
 public final class UtilityOperations {
-    public static Player[] swapPlayer(Player strikerBatsman, Player nonStrikerBatsman)
+    public static Players[] swapPlayer(Players strikerBatsman, Players nonStrikerBatsman)
     {
-        return new Player[]{nonStrikerBatsman,strikerBatsman};
+        return new Players[]{nonStrikerBatsman,strikerBatsman};
     }
-    public static Player nextBatsman(Team battingTeam, Player strikerBatsman, Player nonStrikerBatsman)
+    public static Players nextBatsman(List<Players> playerList, Players strikerBatsman, Players nonStrikerBatsman)
     {
-        strikerBatsman = battingTeam.getPlayerList().get(max(strikerBatsman.getBattingOrder(),nonStrikerBatsman.getBattingOrder()) + 1);
+        strikerBatsman = playerList.get(max(strikerBatsman.getBattingOrder(),nonStrikerBatsman.getBattingOrder()) + 1);
         return strikerBatsman;
     }
-    public static PossibleOutputOfBall randomGenerator(Player strikerBatsman) {
-        return PossibleOutputOfBall.getOutcomeOfBall(strikerBatsman.getRole());
+    public static PossibleOutputOfBall randomGenerator(Players strikerBatsman) {
+        return PossibleOutputOfBall.getOutcomeOfBall(strikerBatsman.getPlayerRole());
     }
 }
