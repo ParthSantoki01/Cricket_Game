@@ -6,7 +6,7 @@ public class Balls {
     private int overId;
     private int ballNumberInOver;
     private int batsmanId;
-    private PossibleOutputOfBall ballOutcome;
+    private String ballOutcome;
     private long createdTime;
     private long modifiedTime;
     private boolean deleted;
@@ -33,7 +33,7 @@ public class Balls {
     public int getBatsmanId() {
         return batsmanId;
     }
-    public PossibleOutputOfBall getBallOutcome() {
+    public String getBallOutcome() {
         return ballOutcome;
     }
     public long getCreatedTime() {
@@ -46,7 +46,7 @@ public class Balls {
         return deleted;
     }
 
-    public void setBallOutcome(PossibleOutputOfBall ballOutcome) {
+    public void setBallOutcome(String ballOutcome) {
         this.ballOutcome = ballOutcome;
     }
 }

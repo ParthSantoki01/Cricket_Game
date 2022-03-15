@@ -9,13 +9,13 @@
 ```http
   GET /match/{matchId}
 ```
+#### Play New Match
+```http
+  POST /match/new/{overInInning}
+```
 #### Get Team Stats of Match
 ```http
   GET /match/{matchId}/teams
-```
-#### Play New Match
-```http
-  POST /match/new
 ```
 #### Delete Match Details
 ```http
@@ -41,7 +41,7 @@
 ```
 #### Update Team Name
 ```http
-  PUT /team/{teamId}
+  PUT /team/update
 ```
 
 ### Player APIs
@@ -59,7 +59,7 @@
 ```
 #### Update Player Name
 ```http
-  PUT /player/{playerId}
+  PUT /player/update
 ```
 
 ### Over API

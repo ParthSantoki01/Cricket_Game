@@ -37,16 +37,16 @@ public class PlayerRepo {
             for (int battingOrder = 0; battingOrder < 11; battingOrder++)
             {
                 int playerId = startPlayerId + battingOrder;
-                PlayerRole playerRole;
-                if(battingOrder < 5) playerRole = PlayerRole.BATSMAN;
-                else if(battingOrder == 5)playerRole = PlayerRole.WICKETKEEPER;
-                else playerRole = PlayerRole.BOWLER;
+                String playerRole;
+                if(battingOrder < 5) playerRole = String.valueOf(PlayerRole.BATSMAN);
+                else if(battingOrder == 5)playerRole = String.valueOf(PlayerRole.WICKETKEEPER);
+                else playerRole = String.valueOf(PlayerRole.BOWLER);
                 String query = "insert into Players (playerId, playerName, battingOrder, playerRole, teamId, createdTime, modifiedTime, deleted)" + " values (?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stmt = conn.prepareStatement(query);
                 stmt.setInt(1, playerId);
                 stmt.setString(2, newTeamObj.getPlayerNameList().get(battingOrder));
                 stmt.setInt(3, battingOrder);
-                stmt.setString(4, String.valueOf(playerRole));
+                stmt.setString(4, playerRole);
                 stmt.setInt(5, teamId);
                 stmt.setLong(6,System.currentTimeMillis());
                 stmt.setLong(7,System.currentTimeMillis());
@@ -70,7 +70,7 @@ public class PlayerRepo {
             ResultSet result = stmt.executeQuery();
             List<Players> playerList = new ArrayList<>();
             while (result.next()) {
-                playerList.add(new Players(result.getInt(1),result.getString(2),result.getInt(3), PlayerRole.valueOf(result.getString(4)),result.getInt(5),result.getLong(6),result.getLong(7),result.getBoolean(8)));
+                playerList.add(new Players(result.getInt(1),result.getString(2),result.getInt(3), result.getString(4),result.getInt(5),result.getLong(6),result.getLong(7),result.getBoolean(8)));
             }
             DbConnector.closeConnection();
             return playerList;
@@ -106,7 +106,7 @@ public class PlayerRepo {
             stmt.setInt(1, playerId);
             ResultSet result = stmt.executeQuery();
             result.next();
-            Players player = new Players(result.getInt(1),result.getString(2),result.getInt(3), PlayerRole.valueOf(result.getString(4)),result.getInt(5),result.getLong(6),result.getLong(7),result.getBoolean(8));
+            Players player = new Players(result.getInt(1),result.getString(2),result.getInt(3),result.getString(4),result.getInt(5),result.getLong(6),result.getLong(7),result.getBoolean(8));
             return player;
         }
         catch (SQLException e)

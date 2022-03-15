@@ -27,7 +27,7 @@ public class MatchControllerServiceImpl implements MatchControllerService {
     @Autowired
     private BallRepo ballRepo;
     @Autowired
-    private MatchServiceImpl matchService;
+    private MatchService matchService;
 
     @Override
     public String createNewMatch(int overInInning) {

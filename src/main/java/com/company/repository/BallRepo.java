@@ -35,7 +35,7 @@ public class BallRepo {
                 insertBallStmt.setInt(2, balls.getOverId());
                 insertBallStmt.setInt(3, balls.getBallNumberInOver());
                 insertBallStmt.setInt(4, balls.getBatsmanId());
-                insertBallStmt.setString(5, String.valueOf(balls.getBallOutcome()));
+                insertBallStmt.setString(5, balls.getBallOutcome());
                 insertBallStmt.setLong(6, balls.getCreatedTime());
                 insertBallStmt.setLong(7, balls.getModifiedTime());
                 insertBallStmt.setBoolean(8, balls.isDeleted());

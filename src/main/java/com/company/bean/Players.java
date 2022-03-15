@@ -6,13 +6,13 @@ public class Players {
     private int playerId;
     private String playerName;
     private int battingOrder;
-    private PlayerRole playerRole;
+    private String playerRole;
     private int teamId;
     private long createdTime;
     private long modifiedTime;
     private boolean deleted;
 
-    public Players(int playerId, String playerName, int battingOrder, PlayerRole playerRole, int teamId, long createdTime, long modifiedTime, boolean deleted) {
+    public Players(int playerId, String playerName, int battingOrder, String playerRole, int teamId, long createdTime, long modifiedTime, boolean deleted) {
         this.playerId = playerId;
         this.playerName = playerName;
         this.battingOrder = battingOrder;
@@ -35,7 +35,7 @@ public class Players {
         return battingOrder;
     }
 
-    public PlayerRole getPlayerRole() {
+    public String getPlayerRole() {
         return playerRole;
     }
 

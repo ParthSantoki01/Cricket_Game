@@ -1,6 +1,7 @@
 package com.company.service;
 
 import com.company.bean.Players;
+import com.company.enums.PlayerRole;
 import com.company.enums.PossibleOutputOfBall;
 import com.company.repository.PlayerRepo;
 import com.company.repository.TeamRepo;
@@ -42,7 +43,7 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
         if(!playerRepo.isPlayerAvailableInMatch(playerId,matchId)) return null;
         Players playerDetails = playerRepo.getPlayer(playerId);
         String playerTeamName = teamRepo.getTeamName(playerDetails.getTeamId());
-        PlayerStatsResponse playerStats = new PlayerStatsResponse(playerDetails.getPlayerId(),playerDetails.getPlayerName(),playerDetails.getBattingOrder(),playerDetails.getPlayerRole(),playerTeamName);
+        PlayerStatsResponse playerStats = new PlayerStatsResponse(playerDetails.getPlayerId(),playerDetails.getPlayerName(),playerDetails.getBattingOrder(), PlayerRole.valueOf(playerDetails.getPlayerRole()),playerTeamName);
 
         List<List<String>> battingOutcome = playerRepo.getPlayerBattingOutcomeInMatch(playerId,matchId);
         for(List<String> outcome : battingOutcome) {

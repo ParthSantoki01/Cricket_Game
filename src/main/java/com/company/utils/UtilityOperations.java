@@ -1,5 +1,6 @@
 package com.company.utils;
 import com.company.bean.Players;
+import com.company.enums.PlayerRole;
 import com.company.enums.PossibleOutputOfBall;
 
 import java.util.List;
@@ -17,6 +18,6 @@ public final class UtilityOperations {
         return strikerBatsman;
     }
     public static PossibleOutputOfBall randomGenerator(Players strikerBatsman) {
-        return PossibleOutputOfBall.getOutcomeOfBall(strikerBatsman.getPlayerRole());
+        return PossibleOutputOfBall.getOutcomeOfBall(PlayerRole.valueOf(strikerBatsman.getPlayerRole()));
     }
 }
