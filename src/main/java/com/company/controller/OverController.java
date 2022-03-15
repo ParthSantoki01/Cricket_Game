@@ -1,7 +1,7 @@
 package com.company.controller;
 
-import com.company.repository.entity.OverStats;
-import com.company.service.OverControllerServiceImpl;
+import com.company.response.OverStatsResponse;
+import com.company.service.OverControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +15,10 @@ import java.util.List;
 public class OverController {
 
     @Autowired
-    private OverControllerServiceImpl overControllerService;
+    private OverControllerService overControllerService;
 
     @GetMapping("/{matchId}")
-    public List<OverStats> getMatchOver(@PathVariable int matchId)
-    {
+    public List<OverStatsResponse> getMatchOver(@PathVariable int matchId) {
         return overControllerService.getOverDetails(matchId);
     }
 }

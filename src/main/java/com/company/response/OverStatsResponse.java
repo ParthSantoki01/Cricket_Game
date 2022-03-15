@@ -1,6 +1,6 @@
-package com.company.repository.entity;
+package com.company.response;
 
-public class OverStats {
+public class OverStatsResponse {
     private String battingTeam;
     private String bowler;
     private int overNumber;
@@ -8,6 +8,12 @@ public class OverStats {
     private int wickets;
     private int wide;
     private int noBall;
+
+    public OverStatsResponse(String battingTeam, String bowler, int overNumber) {
+        this.battingTeam = battingTeam;
+        this.bowler = bowler;
+        this.overNumber = overNumber;
+    }
 
     public String getBattingTeam() {
         return battingTeam;
@@ -31,15 +37,6 @@ public class OverStats {
         return noBall;
     }
 
-    public void setBattingTeam(String battingTeam) {
-        this.battingTeam = battingTeam;
-    }
-    public void setBowler(String bowler) {
-        this.bowler = bowler;
-    }
-    public void setOverNumber(int overNumber) {
-        this.overNumber = overNumber;
-    }
     public void addRuns(int runs) {
         this.runs += runs;
     }
@@ -53,11 +50,5 @@ public class OverStats {
     public void addNoBall() {
         this.noBall++;
         this.runs++;
-    }
-
-    public OverStats(String battingTeam, String bowler, int overNumber) {
-        this.battingTeam = battingTeam;
-        this.bowler = bowler;
-        this.overNumber = overNumber;
     }
 }

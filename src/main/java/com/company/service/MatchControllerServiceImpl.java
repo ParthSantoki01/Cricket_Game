@@ -1,16 +1,17 @@
 package com.company.service;
 
-import com.company.bean.Match;
-import com.company.bean.Team;
+import com.company.bean.*;
 import com.company.enums.PossibleOutputOfBall;
 import com.company.repository.*;
-import com.company.repository.entity.MatchInfo;
-import com.company.repository.entity.TeamStats;
+import com.company.response.MatchResponse;
+import com.company.response.TeamStatsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MatchControllerServiceImpl implements MatchControllerService {
@@ -25,60 +26,93 @@ public class MatchControllerServiceImpl implements MatchControllerService {
     private OverRepo overRepo;
     @Autowired
     private BallRepo ballRepo;
+    @Autowired
+    private MatchService matchService;
 
     @Override
-    public int startNewMatch(int overInInning) {
+    public String createNewMatch(int overInInning) {
+        int noOfTeams = teamRepo.noOfTeamInDatabase();
+        if(noOfTeams < 2) return "Please, First create at least 2 team for Play match!";
+        int team1Id, team2Id;
+        do {
+            team1Id = 1 + (int) (Math.random() * noOfTeams);
+            team2Id = 1 + (int) (Math.random() * noOfTeams);
+        } while ((team1Id == team2Id) || !teamRepo.isTeamAvailable(team1Id) || !teamRepo.isTeamAvailable(team2Id));
+
+        Teams team1 = teamRepo.getTeamDetails(team1Id);
+        if(team1 == null)return "Database Error!";
+        Teams team2 = teamRepo.getTeamDetails(team2Id);
+        if(team2 == null)return "Database Error!";
+
+        Map<Integer,Teams> teams = new HashMap<>();
+        teams.put(team1Id,team1);
+        teams.put(team2Id,team2);
+
+        List<Players> team1Players = playerRepo.getTeamPlayers(team1Id);
+        if(team1Players == null)return "Database Error!";
+        List<Players> team2Players = playerRepo.getTeamPlayers(team2Id);
+        if(team2Players == null)return "Database Error!";
+
+        Map<Integer,List<Players>> players = new HashMap<>();
+        players.put(team1Id,team1Players);
+        players.put(team2Id,team2Players);
+
         int matchId = matchRepo.getNewMatchId();
-        if(matchId == -1)return -1;
+        if(matchId == 0)return "Error, Match not created";
 
-        List<Team> teamList = new ArrayList<>();
-        if(!teamRepo.getTeams(teamList)) return -1;
-        if(!playerRepo.setPlayerInTeam(teamList))return -1;
-
+        List<Overs> oversList = new ArrayList<>();
+        List<Balls> ballsList = new ArrayList<>();
         int newOverId = overRepo.getNewOverId();
         int newBallId = ballRepo.getNewBallID();
+        if(newBallId == 0 || newOverId == 0)return "Database Error!";
 
-        Match newMatch = new Match(matchId, overInInning);
-        MatchServiceImpl matchService = new MatchServiceImpl();
-        matchService.startGame(newMatch, teamList, newOverId, newBallId);
-        String matchStatus = matchRepo.insertMatchDetails(newMatch);
-        String overStatus = overRepo.insertOversDetails(newMatch.getOverList());
-        String ballStatus = ballRepo.insertBallsDetails(newMatch.getOverList());
+        Matches cricketMatch = new Matches(matchId, overInInning, System.currentTimeMillis(), System.currentTimeMillis(),false);
+        matchService.tossOfMatch(team1Id,team2Id,cricketMatch);
+        matchService.startGame(cricketMatch, teams, players, oversList, ballsList, newOverId, newBallId);
+        String matchStatus = matchRepo.insertMatchDetails(cricketMatch);
+        String overStatus = overRepo.insertOversDetails(oversList);
+        String ballStatus = ballRepo.insertBallsDetails(ballsList);
 
-        if(matchStatus.equals("Error") || overStatus.equals("Error") || ballStatus.equals("Error")) return 0;
-        return matchId;
+        if(matchStatus.equals("Error") || overStatus.equals("Error") || ballStatus.equals("Error")) return "DataBase Error";
+        return "New Match Created With matchId = " + matchId;
     }
 
     @Override
-    public MatchInfo getMatch(int matchId) {
+    public MatchResponse getMatch(int matchId) {
         if(!matchRepo.isMatchAvailable(matchId)) return null;
-        else return matchRepo.getMatch(matchId);
+        Matches cricketMatch = matchRepo.getMatch(matchId);
+        String firstBattingTeamName = teamRepo.getTeamName(cricketMatch.getFirstBattingTeamId());
+        String secondBattingTeamName = teamRepo.getTeamName(cricketMatch.getSecondBattingTeamId());
+        String tossWinningTeamName = (cricketMatch.getTossWinningTeamId() == cricketMatch.getFirstBattingTeamId()) ? firstBattingTeamName : secondBattingTeamName;
+        String winningTeamName = (cricketMatch.getWinningTeamId() == cricketMatch.getFirstBattingTeamId()) ? firstBattingTeamName : secondBattingTeamName;
+        MatchResponse matchResponse = new MatchResponse(cricketMatch.getMatchId(),tossWinningTeamName,firstBattingTeamName,secondBattingTeamName,winningTeamName,cricketMatch.getRunMargin(),cricketMatch.getWicketMargin(),cricketMatch.getOversInInning());
+        return matchResponse;
     }
 
     @Override
-    public List<MatchInfo> getMatch() {
-        List<MatchInfo> matchList = new ArrayList<>();
+    public List<MatchResponse> getMatch() {
+        List<MatchResponse> matchResponseList = new ArrayList<>();
         int lastMatchId = matchRepo.getNewMatchId();
         for(int i = 1; i < lastMatchId; i++)
-            if (matchRepo.isMatchAvailable(i)) matchList.add(matchRepo.getMatch(i));
-        return matchList;
+            if (matchRepo.isMatchAvailable(i)) matchResponseList.add(getMatch(i));
+        return matchResponseList;
     }
 
     @Override
-    public List<TeamStats> getMatchTeamsStats(int matchId) {
+    public List<TeamStatsResponse> getMatchTeamsStats(int matchId) {
         if(!matchRepo.isMatchAvailable(matchId)) return null;
 
-        List<Integer> teamIdList = new ArrayList<>();
-        teamRepo.getTeamsIdInMatch(teamIdList,matchId);
+        List<Integer> teamIdList = matchRepo.getTeamsIdInMatch(matchId);
 
         List<List<String>> teamOutcomes = new ArrayList<>();
         teamOutcomes.add(teamRepo.getTeamOutcomes(teamIdList.get(0),matchId));
         teamOutcomes.add(teamRepo.getTeamOutcomes(teamIdList.get(1),matchId));
 
-        List<TeamStats> teamStatsList = new ArrayList<>();
+        List<TeamStatsResponse> teamStatsList = new ArrayList<>();
         int i = 0;
         for (List<String> teamOutcome : teamOutcomes) {
-            TeamStats team = new TeamStats(teamIdList.get(i),teamRepo.getTeamName(teamIdList.get(i)));
+            String teamName = teamRepo.getTeamName(teamIdList.get(i));
+            TeamStatsResponse teamStats = new TeamStatsResponse(teamIdList.get(i),teamName);
             int playedBall = 0;
             for (String stats : teamOutcome)
             {
@@ -88,45 +122,40 @@ public class MatchControllerServiceImpl implements MatchControllerService {
                         break;
                     case RUN_1:
                         playedBall++;
-                        team.addRunScore(1);
+                        teamStats.addRunScore(1);
                         break;
                     case RUN_2:
                         playedBall++;
-                        team.addRunScore(2);
+                        teamStats.addRunScore(2);
                         break;
                     case RUN_3:
                         playedBall++;
-                        team.addRunScore(3);
+                        teamStats.addRunScore(3);
                         break;
                     case RUN_4:
                         playedBall++;
-                        team.addRunScore(4);
-                        team.addFours();
+                        teamStats.addFours();
                         break;
                     case RUN_6:
                         playedBall++;
-                        team.addRunScore(6);
-                        team.addSixes();
+                        teamStats.addSixes();
                         break;
                     case WICKET:
                         playedBall++;
-                        team.addWickets();
+                        teamStats.addWickets();
                         break;
                     case WIDE:
-                        team.addRunScore(1);
-                        team.addWideRuns();
+                        teamStats.addWideRuns();
                         break;
                     case NO_BALL:
-                        team.addRunScore(1);
-                        team.addNoBallRuns();
+                        teamStats.addNoBallRuns();
                         break;
                 }
             }
-            team.setPlayerOver((playedBall/6) + "." + ((playedBall%6 != 0) ? (playedBall % 6) : ""));
-            teamStatsList.add(team);
+            teamStats.setPlayerOver((playedBall/6) + "" + ((playedBall%6 != 0) ? ("." + (playedBall % 6)) : ""));
+            teamStatsList.add(teamStats);
             i++;
         }
-
         return teamStatsList;
     }
 

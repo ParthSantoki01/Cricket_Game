@@ -1,10 +1,12 @@
-package com.company.repository.entity;
+package com.company.response;
 
-public class PlayerStats {
-    private String playerId;
+import com.company.enums.PlayerRole;
+
+public class PlayerStatsResponse {
+    private int playerId;
     private String name;
-    private String battingOrder;
-    private String role;
+    private int battingOrder;
+    private PlayerRole role;
     private String teamName;
     private int runScore;
     private int ballPlayed;
@@ -14,7 +16,7 @@ public class PlayerStats {
     private int threeRunsScore;
     private int fourRunsScore;
     private int sixRunsScore;
-    private String wicketTakenByBowler = "Not Out";
+    private String wicketTakenByBowler;
     private int runGiven;
     private int wicketTaken;
     private int ballDelivered;
@@ -27,7 +29,7 @@ public class PlayerStats {
     private int wideBallsDelivered;
     private int noBallsDelivered;
 
-    public PlayerStats(String playerId, String name, String battingOrder, String role, String teamName) {
+    public PlayerStatsResponse(int playerId, String name, int battingOrder, PlayerRole role, String teamName) {
         this.playerId = playerId;
         this.name = name;
         this.battingOrder = battingOrder;
@@ -35,16 +37,16 @@ public class PlayerStats {
         this.teamName = teamName;
     }
 
-    public String getPlayerId() {
+    public int getPlayerId() {
         return playerId;
     }
     public String getName() {
         return name;
     }
-    public String getBattingOrder() {
+    public int getBattingOrder() {
         return battingOrder;
     }
-    public String getRole() {
+    public PlayerRole getRole() {
         return role;
     }
     public String getTeamName() {
@@ -111,9 +113,6 @@ public class PlayerStats {
         return noBallsDelivered;
     }
 
-    public void addRunScore(int runScore) {
-        this.runScore += runScore;
-    }
     public void addBallPlayed() {
         this.ballPlayed++;
     }
@@ -122,24 +121,26 @@ public class PlayerStats {
     }
     public void addOneRunsScored() {
         this.oneRunsScored++;
+        this.runScore++;
     }
     public void addTwoRunsScored() {
         this.twoRunsScored++;
+        this.runScore += 2;
     }
     public void addThreeRunsScore() {
         this.threeRunsScore++;
+        this.runScore += 3;
     }
     public void addFourRunsScore() {
         this.fourRunsScore++;
+        this.runScore += 4;
     }
     public void addSixRunsScore() {
         this.sixRunsScore++;
+        this.runScore += 6;
     }
     public void setWicketTakenByBowler(String wicketTakenByBowler) {
         this.wicketTakenByBowler = wicketTakenByBowler;
-    }
-    public void addRunGiven(int runGiven) {
-        this.runGiven += runGiven;
     }
     public void addWicketTaken() {
         this.wicketTaken++;
@@ -152,18 +153,23 @@ public class PlayerStats {
     }
     public void addOneRunBallsBowled() {
         this.oneRunBallsBowled++;
+        this.runGiven++;
     }
     public void addTwoRunBallsBowled() {
         this.twoRunBallsBowled++;
+        this.runGiven += 2;
     }
     public void addThreeRunBallsBowled() {
         this.threeRunBallsBowled++;
+        this.runGiven += 3;
     }
     public void addFourRunBallsBowled() {
         this.fourRunBallsBowled++;
+        this.runGiven += 4;
     }
     public void addSixRunBallsBowled() {
         this.sixRunBallsBowled++;
+        this.runGiven += 6;
     }
     public void addWideBallsDelivered() {
         this.wideBallsDelivered++;

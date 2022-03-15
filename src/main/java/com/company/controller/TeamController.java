@@ -1,7 +1,9 @@
 package com.company.controller;
 
-import com.company.repository.entity.PlayerInfo;
-import com.company.repository.entity.TeamInfo;
+import com.company.bean.Players;
+import com.company.bean.Teams;
+import com.company.request.ReqObjNewTeam;
+import com.company.request.ReqObjRenameTeam;
 import com.company.service.TeamControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,29 +18,29 @@ public class TeamController {
     private TeamControllerService teamControllerService;
 
     @GetMapping("/")
-    public List<TeamInfo> getAllTeam()
+    public List<Teams> getAllTeam()
     {
         return teamControllerService.getAllTeam();
     }
 
     @GetMapping("/{teamId}")
-    public TeamInfo getTeamDetails(@PathVariable int teamId)
+    public Teams getTeamDetails(@PathVariable int teamId)
     {
         return teamControllerService.getTeam(teamId);
     }
 
     @GetMapping("/{teamId}/player")
-    public List<PlayerInfo> getPlayerInfo(@PathVariable int teamId) {
-        return teamControllerService.getTeamPlayer(teamId);
+    public List<Players> getPlayerInfo(@PathVariable int teamId) {
+        return teamControllerService.getTeamPlayers(teamId);
     }
 
     @PostMapping("/new")
-    public String insertNewTeam(@RequestBody String[] teamDetails) {
-        return teamControllerService.insertNewTeam(teamDetails);
+    public String insertNewTeam(@RequestBody ReqObjNewTeam newTeamObj) {
+        return teamControllerService.insertNewTeam(newTeamObj);
     }
 
-    @PutMapping("/{teamId}")
-    public String updatePlayerName(@RequestBody String teamName,@PathVariable int teamId) {
-        return teamControllerService.updateTeamName(teamName,teamId);
+    @PutMapping("/update")
+    public String updatePlayerName(@RequestBody ReqObjRenameTeam newNameObj) {
+        return teamControllerService.updateTeamName(newNameObj.getTeamNewName(),newNameObj.getTeamId());
     }
 }

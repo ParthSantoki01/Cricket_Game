@@ -1,6 +1,6 @@
-package com.company.repository.entity;
+package com.company.response;
 
-public class TeamStats {
+public class TeamStatsResponse {
     private int teamId;
     private String teamName;
     private int runScore;
@@ -10,6 +10,11 @@ public class TeamStats {
     private int noBallRuns;
     private int fours;
     private int sixes;
+
+    public TeamStatsResponse(int teamId, String teamName) {
+        this.teamId = teamId;
+        this.teamName = teamName;
+    }
 
     public int getTeamId() {
         return teamId;
@@ -39,41 +44,29 @@ public class TeamStats {
         return sixes;
     }
 
-    public void addRunScore(int runScore) {
-        this.runScore += runScore;
-    }
     public void setPlayerOver(String playerOver) {
         this.playerOver = playerOver;
+    }
+    public void addRunScore(int runScore) {
+        this.runScore += runScore;
     }
     public void addWickets() {
         this.wickets++;
     }
     public void addWideRuns() {
         this.wideRuns++;
+        this.runScore++;
     }
     public void addNoBallRuns() {
         this.noBallRuns++;
+        this.runScore++;
     }
     public void addFours() {
         this.fours++;
+        this.runScore += 4;
     }
     public void addSixes() {
         this.sixes++;
-    }
-
-    public TeamStats(int teamId, String teamName) {
-        this.teamId = teamId;
-        this.teamName = teamName;
-    }
-
-    public TeamStats(int teamId, String teamName, int runScore, int wickets, int wideRuns, int noBallRuns, int fours, int sixes) {
-        this.teamId = teamId;
-        this.teamName = teamName;
-        this.runScore = runScore;
-        this.wickets = wickets;
-        this.wideRuns = wideRuns;
-        this.noBallRuns = noBallRuns;
-        this.fours = fours;
-        this.sixes = sixes;
+        this.runScore += 6;
     }
 }

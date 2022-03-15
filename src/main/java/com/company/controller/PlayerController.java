@@ -1,9 +1,9 @@
 package com.company.controller;
 
-import com.company.repository.entity.PlayerInfo;
-import com.company.repository.entity.PlayerStats;
+import com.company.bean.Players;
+import com.company.request.ReqObjRenamePlayer;
+import com.company.response.PlayerStatsResponse;
 import com.company.service.PlayerControllerService;
-import com.company.service.PlayerControllerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,25 +17,22 @@ public class PlayerController {
     private PlayerControllerService playerControllerService;
 
     @GetMapping("/")
-    public List<PlayerInfo> getAllPlayers()
-    {
+    public List<Players> getAllPlayers() {
         return playerControllerService.getAllPlayers();
     }
 
     @GetMapping("/{playerId}")
-    public PlayerInfo getPlayerInfo(@PathVariable int playerId) {
-        return playerControllerService.getPlayerInfo(playerId);
+    public Players getPlayerInfo(@PathVariable int playerId) {
+        return playerControllerService.getPlayer(playerId);
     }
 
     @GetMapping("/{playerId}/{matchId}")
-    public PlayerStats getPlayerStats(@PathVariable int playerId, @PathVariable int matchId)
-    {
+    public PlayerStatsResponse getPlayerStats(@PathVariable int playerId, @PathVariable int matchId) {
         return playerControllerService.getPlayerStats(playerId,matchId);
     }
 
-    @PutMapping("/{playerId}")
-    public String updatePlayerName(@RequestBody String playerName,@PathVariable int playerId)
-    {
-        return playerControllerService.updatePlayerName(playerName,playerId);
+    @PutMapping("/update")
+    public String updatePlayerName(@RequestBody ReqObjRenamePlayer newNameObj) {
+        return playerControllerService.updatePlayerName(newNameObj.getPlayerNewName(),newNameObj.getPlayerId());
     }
 }

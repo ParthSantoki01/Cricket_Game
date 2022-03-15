@@ -1,10 +1,11 @@
 package com.company.service;
 
+import com.company.bean.Players;
+import com.company.enums.PlayerRole;
 import com.company.enums.PossibleOutputOfBall;
 import com.company.repository.PlayerRepo;
 import com.company.repository.TeamRepo;
-import com.company.repository.entity.PlayerInfo;
-import com.company.repository.entity.PlayerStats;
+import com.company.response.PlayerStatsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,135 +21,109 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
     private TeamRepo teamRepo;
 
     @Override
-    public List<PlayerInfo> getAllPlayers() {
+    public List<Players> getAllPlayers() {
         int lastPlayerId = playerRepo.getNewPlayerId();
-        List<PlayerInfo> playerList = new ArrayList<>();
-        for(int i = 1; i <= lastPlayerId; i++)
-        {
-            if(playerRepo.isPlayerAvailable(i))
-            {
-                List<String> playerInformation = new ArrayList<>();
-                playerRepo.getPlayerInfo(i,playerInformation);
-                playerList.add(new PlayerInfo(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),teamRepo.getTeamName(Integer.parseInt(playerInformation.get(4)))));
+        List<Players> playerList = new ArrayList<>();
+        for(int i = 1; i <= lastPlayerId; i++) {
+            if(playerRepo.isPlayerAvailable(i)) {
+                playerList.add(getPlayer(i));
             }
         }
         return playerList;
     }
 
     @Override
-    public PlayerInfo getPlayerInfo(int playerId) {
-        if(playerRepo.isPlayerAvailable(playerId))
-        {
-            List<String> playerInformation = new ArrayList<>();
-            playerRepo.getPlayerInfo(playerId,playerInformation);
-            return new PlayerInfo(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3),teamRepo.getTeamName(Integer.parseInt(playerInformation.get(4))));
-        }
-        else
-        {
-            return null;
-        }
+    public Players getPlayer(int playerId) {
+        if(!playerRepo.isPlayerAvailable(playerId)) return null;
+        return playerRepo.getPlayer(playerId);
     }
 
     @Override
-    public PlayerStats getPlayerStats(int playerId, int matchId) {
+    public PlayerStatsResponse getPlayerStats(int playerId, int matchId) {
         if(!playerRepo.isPlayerAvailableInMatch(playerId,matchId)) return null;
-        List<String> playerInformation = new ArrayList<>();
-        playerRepo.getPlayerInfo(playerId,playerInformation);
-        PlayerStats player = new PlayerStats(playerInformation.get(0),playerInformation.get(1),playerInformation.get(2),playerInformation.get(3), teamRepo.getTeamName(Integer.parseInt(playerInformation.get(4))));
+        Players playerDetails = playerRepo.getPlayer(playerId);
+        String playerTeamName = teamRepo.getTeamName(playerDetails.getTeamId());
+        PlayerStatsResponse playerStats = new PlayerStatsResponse(playerDetails.getPlayerId(),playerDetails.getPlayerName(),playerDetails.getBattingOrder(), PlayerRole.valueOf(playerDetails.getPlayerRole()),playerTeamName);
 
-        List<List<String>> battingOutcome = new ArrayList<>();
-        playerRepo.getPlayerBattingOutcomeInMatch(playerId,matchId,battingOutcome);
+        List<List<String>> battingOutcome = playerRepo.getPlayerBattingOutcomeInMatch(playerId,matchId);
         for(List<String> outcome : battingOutcome) {
             switch (PossibleOutputOfBall.valueOf(outcome.get(0))) {
                 case RUN_0:
-                    player.addDotBallPlayed();
-                    player.addBallPlayed();
+                    playerStats.addDotBallPlayed();
+                    playerStats.addBallPlayed();
                     break;
                 case RUN_1:
-                    player.addOneRunsScored();
-                    player.addRunScore(1);
-                    player.addBallPlayed();
+                    playerStats.addOneRunsScored();
+                    playerStats.addBallPlayed();
                     break;
                 case RUN_2:
-                    player.addTwoRunsScored();
-                    player.addRunScore(2);
-                    player.addBallPlayed();
+                    playerStats.addTwoRunsScored();
+                    playerStats.addBallPlayed();
                     break;
                 case RUN_3:
-                    player.addThreeRunsScore();
-                    player.addRunScore(3);
-                    player.addBallPlayed();
+                    playerStats.addThreeRunsScore();
+                    playerStats.addBallPlayed();
                     break;
                 case RUN_4:
-                    player.addFourRunsScore();
-                    player.addRunScore(4);
-                    player.addBallPlayed();
+                    playerStats.addFourRunsScore();
+                    playerStats.addBallPlayed();
                     break;
                 case RUN_6:
-                    player.addSixRunsScore();
-                    player.addRunScore(6);
-                    player.addBallPlayed();
+                    playerStats.addSixRunsScore();
+                    playerStats.addBallPlayed();
                     break;
                 case WICKET:
-                    player.addBallPlayed();
-                    player.setWicketTakenByBowler(playerRepo.getPlayerNameById(Integer.parseInt(outcome.get(1))));
+                    playerStats.addBallPlayed();
+                    playerStats.setWicketTakenByBowler(playerRepo.getPlayerNameById(Integer.parseInt(outcome.get(1))));
                     break;
             }
         }
-
-        List<String> bowlingOutcome = new ArrayList<>();
-        playerRepo.getPlayerBowlerOutcomeInMatch(playerId,matchId,bowlingOutcome);
+        List<String> bowlingOutcome = playerRepo.getPlayerBowlerOutcomeInMatch(playerId,matchId);
         for (String stats : bowlingOutcome) {
             switch (PossibleOutputOfBall.valueOf(stats)) {
                 case RUN_0:
-                    player.addDotBallsDelivered();
-                    player.addBallDelivered();
+                    playerStats.addDotBallsDelivered();
+                    playerStats.addBallDelivered();
                     break;
                 case RUN_1:
-                    player.addOneRunBallsBowled();
-                    player.addRunGiven(1);
-                    player.addBallDelivered();
+                    playerStats.addOneRunBallsBowled();
+                    playerStats.addBallDelivered();
                     break;
                 case RUN_2:
-                    player.addTwoRunBallsBowled();
-                    player.addRunGiven(2);
-                    player.addBallDelivered();
+                    playerStats.addTwoRunBallsBowled();
+                    playerStats.addBallDelivered();
                     break;
                 case RUN_3:
-                    player.addThreeRunBallsBowled();
-                    player.addRunGiven(3);
-                    player.addBallDelivered();
+                    playerStats.addThreeRunBallsBowled();
+                    playerStats.addBallDelivered();
                     break;
                 case RUN_4:
-                    player.addFourRunBallsBowled();
-                    player.addRunGiven(4);
-                    player.addBallDelivered();
+                    playerStats.addFourRunBallsBowled();
+                    playerStats.addBallDelivered();
                     break;
                 case RUN_6:
-                    player.addSixRunBallsBowled();
-                    player.addRunGiven(6);
-                    player.addBallDelivered();
+                    playerStats.addSixRunBallsBowled();
+                    playerStats.addBallDelivered();
                     break;
                 case WICKET:
-                    player.addWicketTaken();
-                    player.addBallDelivered();
+                    playerStats.addWicketTaken();
+                    playerStats.addBallDelivered();
                     break;
                 case WIDE:
-                    player.addWideBallsDelivered();
-                    player.addBallDelivered();
+                    playerStats.addWideBallsDelivered();
+                    playerStats.addBallDelivered();
                     break;
                 case NO_BALL:
-                    player.addNoBallsDelivered();
-                    player.addBallDelivered();
+                    playerStats.addNoBallsDelivered();
+                    playerStats.addBallDelivered();
                     break;
             }
         }
-        return player;
+        return playerStats;
     }
 
     @Override
-    public String updatePlayerName(String playerName, int playerId)
-    {
+    public String updatePlayerName(String playerName, int playerId) {
         return playerRepo.updatePlayerName(playerName,playerId);
     }
 }
