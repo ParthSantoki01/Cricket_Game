@@ -31,8 +31,9 @@ public class MatchControllerServiceImpl implements MatchControllerService {
 
     @Override
     public String createNewMatch(int overInInning) {
+        if(overInInning == 0)return "Give Non Zero overs to play a Match";
         int noOfTeams = teamRepo.noOfTeamInDatabase();
-        if(noOfTeams < 2) return "Please, First create at least 2 team for Play match!";
+        if(noOfTeams < 2) return "Please, First create at least 2 team for Play match";
         int team1Id, team2Id;
         do {
             team1Id = 1 + (int) (Math.random() * noOfTeams);
@@ -84,7 +85,10 @@ public class MatchControllerServiceImpl implements MatchControllerService {
         String firstBattingTeamName = teamRepo.getTeamName(cricketMatch.getFirstBattingTeamId());
         String secondBattingTeamName = teamRepo.getTeamName(cricketMatch.getSecondBattingTeamId());
         String tossWinningTeamName = (cricketMatch.getTossWinningTeamId() == cricketMatch.getFirstBattingTeamId()) ? firstBattingTeamName : secondBattingTeamName;
-        String winningTeamName = (cricketMatch.getWinningTeamId() == cricketMatch.getFirstBattingTeamId()) ? firstBattingTeamName : secondBattingTeamName;
+        String winningTeamName = "";
+        if(cricketMatch.getRunMargin() != 0 || cricketMatch.getWicketMargin() != 0) {
+            winningTeamName = (cricketMatch.getWinningTeamId() == cricketMatch.getFirstBattingTeamId()) ? firstBattingTeamName : secondBattingTeamName;
+        }
         MatchResponse matchResponse = new MatchResponse(cricketMatch.getMatchId(),tossWinningTeamName,firstBattingTeamName,secondBattingTeamName,winningTeamName,cricketMatch.getRunMargin(),cricketMatch.getWicketMargin(),cricketMatch.getOversInInning());
         return matchResponse;
     }
@@ -160,8 +164,8 @@ public class MatchControllerServiceImpl implements MatchControllerService {
     }
 
     @Override
-    public String deleteMatchDetails(int matchId)
-    {
+    public String deleteMatchDetails(int matchId) {
+        if(!matchRepo.isMatchAvailable(matchId))return "Match is not present, give valid matchId";
         return matchRepo.deleteMatchDetails(matchId);
     }
 }

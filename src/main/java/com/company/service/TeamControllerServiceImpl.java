@@ -29,22 +29,25 @@ public class TeamControllerServiceImpl implements TeamControllerService {
     public List<Teams> getAllTeam() {
         int lastTeamId = teamRepo.getNewTeamId();
         List<Teams> teamList = new ArrayList<>();
-        for(int i = 1; i <= lastTeamId; i++) {
-            if(teamRepo.isTeamAvailable(i)) teamList.add(teamRepo.getTeamDetails(i));
-        }
+        for(int i = 1; i <= lastTeamId; i++)
+            if (teamRepo.isTeamAvailable(i)) teamList.add(teamRepo.getTeamDetails(i));
         return teamList;
     }
 
     @Override
     public Teams getTeam(int teamId) {
-        if(teamRepo.isTeamAvailable(teamId)) {
-            return teamRepo.getTeamDetails(teamId);
-        }
+        if(teamRepo.isTeamAvailable(teamId)) return teamRepo.getTeamDetails(teamId);
         return null;
     }
 
     @Override
     public String insertNewTeam(ReqObjNewTeam newTeamObj) {
+        if(newTeamObj.getTeamName().length() == 0) return "TeamName is not Valid.";
+        if(newTeamObj.getPlayerNameList().size() != 11) return "The number of players in the team should be 11.";
+
+        for(String playerName : newTeamObj.getPlayerNameList())
+            if(playerName.length() == 0) return "PlayerName is not Valid.";
+
         int teamId = teamRepo.insertNewTeamDetails(newTeamObj);
         if(teamId == 0)return "DataBase error";
         if(!playerRepo.insertNewPlayersDetails(teamId,newTeamObj)) return "DataBase error";
@@ -53,6 +56,8 @@ public class TeamControllerServiceImpl implements TeamControllerService {
 
     @Override
     public String updateTeamName(String teamName, int teamId) {
+        if(!teamRepo.isTeamAvailable(teamId))return "Team is not present in database.";
+        if(teamName.length() == 0)return "TeamName is not Valid.";
         return teamRepo.updateTeamName(teamName,teamId);
     }
 }

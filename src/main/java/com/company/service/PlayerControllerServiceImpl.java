@@ -24,11 +24,8 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
     public List<Players> getAllPlayers() {
         int lastPlayerId = playerRepo.getNewPlayerId();
         List<Players> playerList = new ArrayList<>();
-        for(int i = 1; i <= lastPlayerId; i++) {
-            if(playerRepo.isPlayerAvailable(i)) {
-                playerList.add(getPlayer(i));
-            }
-        }
+        for(int i = 1; i <= lastPlayerId; i++)
+            if (playerRepo.isPlayerAvailable(i)) playerList.add(getPlayer(i));
         return playerList;
     }
 
@@ -124,6 +121,8 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
 
     @Override
     public String updatePlayerName(String playerName, int playerId) {
+        if(!playerRepo.isPlayerAvailable(playerId))return "Player is not present in database.";
+        if(playerName.length() == 0)return "PlayerName is not Valid.";
         return playerRepo.updatePlayerName(playerName,playerId);
     }
 }
