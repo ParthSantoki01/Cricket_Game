@@ -6,6 +6,9 @@ import com.company.repository.*;
 import com.company.response.MatchResponse;
 import com.company.response.TeamStatsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class MatchControllerServiceImpl implements MatchControllerService {
     private MatchService matchService;
 
     @Override
+    @Caching(evict = { @CacheEvict(value = "matchCache", allEntries=true) })
     public String createNewMatch(int overInInning) {
         if(overInInning == 0)return "Give Non Zero overs to play a Match";
         int noOfTeams = teamRepo.noOfTeamInDatabase();
@@ -79,7 +83,9 @@ public class MatchControllerServiceImpl implements MatchControllerService {
     }
 
     @Override
+    @Cacheable(cacheNames = "matchCache")
     public MatchResponse getMatch(int matchId) {
+        System.out.println("Match come from Database");
         if(!matchRepo.isMatchAvailable(matchId)) return null;
         Matches cricketMatch = matchRepo.getMatch(matchId);
         String firstBattingTeamName = teamRepo.getTeamName(cricketMatch.getFirstBattingTeamId());
@@ -92,7 +98,6 @@ public class MatchControllerServiceImpl implements MatchControllerService {
         MatchResponse matchResponse = new MatchResponse(cricketMatch.getMatchId(),tossWinningTeamName,firstBattingTeamName,secondBattingTeamName,winningTeamName,cricketMatch.getRunMargin(),cricketMatch.getWicketMargin(),cricketMatch.getOversInInning());
         return matchResponse;
     }
-
     @Override
     public List<MatchResponse> getMatch() {
         List<MatchResponse> matchResponseList = new ArrayList<>();

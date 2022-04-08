@@ -75,40 +75,36 @@ public class MatchServiceImpl implements MatchService{
             {
                 Balls ball = new Balls(ballId++,over.getOverId(),ballNo,strikerBatsman.getPlayerId(),System.currentTimeMillis(),System.currentTimeMillis(),false);
                 PossibleOutputOfBall generatedOutput = UtilityOperations.randomGenerator(strikerBatsman);
-                if(generatedOutput.equals(PossibleOutputOfBall.WICKET))
-                {
-                    ball.setBallOutcome(String.valueOf(PossibleOutputOfBall.WICKET));
-                    wickets[inningNo-1]++;
-                    if(wickets[inningNo-1] >= 10)
-                    {
-                        ballsList.add(ball);
-                        return;
-                    }
-                    strikerBatsman = UtilityOperations.nextBatsman(players.get(battingTeam.getTeamId()),strikerBatsman,nonStrikerBatsman);
-                }
-                else if(generatedOutput.equals(PossibleOutputOfBall.WIDE))
-                {
-                    runScore[inningNo-1]++;
-                    ball.setBallOutcome(String.valueOf(PossibleOutputOfBall.WIDE));
-                    ballNo--;
-                }
-                else if(generatedOutput.equals(PossibleOutputOfBall.NO_BALL))
-                {
-                    runScore[inningNo-1]++;
-                    ball.setBallOutcome(String.valueOf(PossibleOutputOfBall.NO_BALL));
-                    ballNo--;
-                }
-                else
-                {
-                    int runCount = Integer.parseInt(String.valueOf((generatedOutput.getDisplayName()).charAt(0)));
-                    runScore[inningNo-1] += runCount;
-                    ball.setBallOutcome(String.valueOf(generatedOutput));
-                    if(runCount % 2 == 1)
-                    {
-                        Players[] swappedPlayers = UtilityOperations.swapPlayer(strikerBatsman,nonStrikerBatsman);
-                        strikerBatsman = swappedPlayers[0];
-                        nonStrikerBatsman = swappedPlayers[1];
-                    }
+                switch (generatedOutput) {
+                    case WICKET:
+                        ball.setBallOutcome(String.valueOf(PossibleOutputOfBall.WICKET));
+                        wickets[inningNo - 1]++;
+                        if (wickets[inningNo - 1] >= 10) {
+                            ballsList.add(ball);
+                            return;
+                        }
+                        strikerBatsman = UtilityOperations.nextBatsman(players.get(battingTeam.getTeamId()), strikerBatsman, nonStrikerBatsman);
+                        break;
+                    case WIDE:
+                        runScore[inningNo - 1]++;
+                        ball.setBallOutcome(String.valueOf(PossibleOutputOfBall.WIDE));
+                        ballNo--;
+                        break;
+                    case NO_BALL:
+                        runScore[inningNo - 1]++;
+                        ball.setBallOutcome(String.valueOf(PossibleOutputOfBall.NO_BALL));
+                        ballNo--;
+                        break;
+                    default:
+                        int runCount = Integer.parseInt(String.valueOf((generatedOutput.getDisplayName()).charAt(0)));
+                        runScore[inningNo - 1] += runCount;
+                        ball.setBallOutcome(String.valueOf(generatedOutput));
+                        if (runCount % 2 == 1) {
+                            Players[] swappedPlayers = UtilityOperations.swapPlayer(strikerBatsman, nonStrikerBatsman);
+                            strikerBatsman = swappedPlayers[0];
+                            nonStrikerBatsman = swappedPlayers[1];
+                        }
+                        break;
                 }
                 ballsList.add(ball);
                 if((inningNo == 2) && (runScore[0] < runScore[1])) { return; }

@@ -10,28 +10,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/player")
+@RequestMapping("/api")
 public class PlayerController {
 
     @Autowired
     private PlayerControllerService playerControllerService;
 
-    @GetMapping("/")
+    @GetMapping("/player")
     public List<Players> getAllPlayers() {
         return playerControllerService.getAllPlayers();
     }
 
-    @GetMapping("/{playerId}")
+    @GetMapping("/player/{playerId}")
     public Players getPlayerInfo(@PathVariable int playerId) {
         return playerControllerService.getPlayer(playerId);
     }
 
-    @GetMapping("/{playerId}/{matchId}")
+    @GetMapping("/player/{playerId}/{matchId}")
     public PlayerStatsResponse getPlayerStats(@PathVariable int playerId, @PathVariable int matchId) {
         return playerControllerService.getPlayerStats(playerId,matchId);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/player/update")
     public String updatePlayerName(@RequestBody ReqObjRenamePlayer newNameObj) {
         return playerControllerService.updatePlayerName(newNameObj.getPlayerNewName(),newNameObj.getPlayerId());
     }

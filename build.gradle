@@ -19,8 +19,18 @@ repositories {
 }
 
 dependencies {
+	// Rest
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Swagger
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+	// Cache
+	implementation 'org.springframework.boot:spring-boot-starter-cache:2.6.5'
+//	implementation 'org.ehcache:ehcache:3.10.0'
+//	implementation 'javax.cache:cache-api'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'

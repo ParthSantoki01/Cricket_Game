@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/over")
+@RequestMapping("/api")
 public class OverController {
 
     @Autowired
     private OverControllerService overControllerService;
 
-    @GetMapping("/{matchId}")
+    @GetMapping("/over/{matchId}")
     public List<OverStatsResponse> getMatchOver(@PathVariable int matchId) {
         return overControllerService.getOverDetails(matchId);
     }

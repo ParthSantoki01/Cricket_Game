@@ -7,6 +7,7 @@ import com.company.repository.PlayerRepo;
 import com.company.repository.TeamRepo;
 import com.company.response.PlayerStatsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,7 +22,9 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
     private TeamRepo teamRepo;
 
     @Override
+    @Cacheable(cacheNames = "playerCache")
     public List<Players> getAllPlayers() {
+        System.out.println("Player comes from Database");
         int lastPlayerId = playerRepo.getNewPlayerId();
         List<Players> playerList = new ArrayList<>();
         for(int i = 1; i <= lastPlayerId; i++)
@@ -30,7 +33,9 @@ public class PlayerControllerServiceImpl implements PlayerControllerService {
     }
 
     @Override
+    @Cacheable(cacheNames = "playerCache")
     public Players getPlayer(int playerId) {
+        System.out.println("Player comes from Database");
         if(!playerRepo.isPlayerAvailable(playerId)) return null;
         return playerRepo.getPlayer(playerId);
     }
